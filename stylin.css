@@ -1,19 +1,17 @@
-
-
-#thing {
+.square {
   position: relative;
+  float: left;
   top: 0px;
   left: 0px;
   height: 50px;
   width: 50px;
+  background-color: ''; */
+}
+
+/* #thing {
   background-color: green;
 }
 
 #thing1 {
-  position: relative;
-  top: 0px;
-  left: 0px;
-  height: 50px;
-  width: 50px;
   background-color: red;
-}
+} */
