@@ -27,6 +27,6 @@ window.onload = function() {
 
 clickBounce = function(clickedItem) {
   var tl = new TimelineLite();
-  tl.to(clickedItem, .1, {height: '+=10px', width: '+=10px'})
-  .to(clickedItem, .2, {height: '-=10px', width: '-=10px'});
+  tl.to(clickedItem, .1, {height: '60px', width: '60px'})
+  .to(clickedItem, .2, {height: '50px', width: '50px'});
 }
