@@ -1,8 +1,19 @@
-.square {
-  position: absolute;
+
+
+#thing {
+  position: relative;
   top: 0px;
   left: 0px;
   height: 50px;
   width: 50px;
   background-color: green;
+}
+
+#thing1 {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  height: 50px;
+  width: 50px;
+  background-color: red;
 }
