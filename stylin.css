@@ -1,6 +1,8 @@
-/* #thing {
-  background: 'black';
+.square {
+  position: absolute;
+  top: 0px;
+  left: 0px;
   height: 50px;
   width: 50px;
-  border-radius: 50%;
-} */
+  background-color: green;
+}
