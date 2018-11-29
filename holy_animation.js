@@ -47,7 +47,7 @@ animateStuff = function() {
 
   var pads = app.querySelectorAll('.pad');
   var knobs = app.querySelectorAll('.knob');
-  var timer = null;
+  var holdFlag = false;
 
   for (let p of pads) {
     p.onmousedown = () => {
@@ -60,16 +60,16 @@ animateStuff = function() {
 
   for (let k of knobs) {
     k.onmousedown = (e) => {
-      var holdFlag = true;
+      holdFlag = true;
       document.onmousemove = (e) => {
         if(holdFlag) {
           TweenLite.to(k, .1, {rotation: -e.pageY});
         }
-        window.onmouseup = () => {
-          console.log("up")
-          TweenLite.to(k, .1, {rotation: '+=0'});
-          holdFlag = false;
-        }
+      }
+      window.onmouseup = () => {
+        console.log("up")
+        TweenLite.to(k, .1, {rotation: '+=0'});
+        holdFlag = false;
       }
     }
   }
