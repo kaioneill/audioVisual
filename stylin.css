@@ -1,11 +1,52 @@
-.square {
+
+body {
+  background-color: #ccffff;
+  padding: 50px;
+}
+
+.main-panel {
+  margin: auto;
+  width: 400px;
+  position: relative;
+}
+
+#controls {
+  /* position: relative; */
+  padding: 10px;
+}
+
+.knob {
+  border-radius: 2em;
+  margin: 2px;
+  position: relative;
+  float: left;
+  top: 0px;
+  left: 0px;
+  height: 30px;
+  width: 30px;
+  background-color:#0066ff;
+}
+
+.pad {
+  margin: 2px;
   position: relative;
   float: left;
   top: 0px;
   left: 0px;
   height: 50px;
   width: 50px;
-  background-color: ''; */
+  background-color: #cc0066;
+}
+
+#pads {
+  /* position: relative; */
+  padding: 10px;
+}
+
+.audio-box {
+
+  height: 100%;
+  width: 100%;
 }
 
 /* #thing {
