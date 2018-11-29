@@ -25,6 +25,18 @@ body {
   height: 30px;
   width: 30px;
   background-color:#0066ff;
+
+}
+.knob-handle {
+  border-radius: 2em;
+  margin: 2px;
+  position: relative;
+  float: left;
+  top: 4px;
+  left: 4px;
+  height: 5px;
+  width: 5px;
+  background-color:#fff;
 }
 
 .pad {

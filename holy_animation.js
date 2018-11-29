@@ -1,11 +1,11 @@
 
 
 window.onload = function() {
-  // var source;
-  // source = audioStuff();
 
   Vue.component('knob', {
-    template: '<div class="knob"></div>'
+    template: `<div class="knob">
+              <div class="knob-handle"></div>
+              </div>`
   })
 
   Vue.component('pad', {
@@ -17,15 +17,15 @@ window.onload = function() {
     data: {
       knobs: [
         {id: 0, name: 'volume'},
-        {id: 1, name: 'filter'}
+        {id: 1, name: 'filter'},
       ],
       pads: [
         {id: 0, name: '1'},
         {id: 1, name: '2'},
-        {id: 0, name: '3'},
-        {id: 0, name: '4'},
-        {id: 0, name: '5'},
-        {id: 0, name: '6'},
+        {id: 2, name: '3'},
+        {id: 3, name: '4'},
+        {id: 4, name: '5'},
+        {id: 5, name: '6'},
       ]
     }
   })
@@ -46,27 +46,33 @@ window.onload = function() {
 animateStuff = function() {
 
   var pads = app.querySelectorAll('.pad');
-
-
+  var knobs = app.querySelectorAll('.knob');
+  var timer = null;
 
   for (let p of pads) {
-    // p.style.backgroundColor = Math.floor(Math.random()*16777215).toString(16);
     p.onmousedown = () => {
-      // source.start();
-
       TweenLite.to(p, .1, {height: '60px', width: '60px'});
     }
     p.onmouseup = () => {
-
       TweenLite.to(p, .2, {height: '50px', width: '50px'});
     }
   }
 
-
-  // var sham = document.querySelector('#sham');
-  // sham.onclick = () => {
-  //   resetColors();
-  // }
+  for (let k of knobs) {
+    k.onmousedown = (e) => {
+      var holdFlag = true;
+      document.onmousemove = (e) => {
+        if(holdFlag) {
+          TweenLite.to(k, .1, {rotation: -e.pageY});
+        }
+        window.onmouseup = () => {
+          console.log("up")
+          TweenLite.to(k, .1, {rotation: '+=0'});
+          holdFlag = false;
+        }
+      }
+    }
+  }
 
 
 
