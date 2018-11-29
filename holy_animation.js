@@ -21,12 +21,12 @@ window.onload = function() {
         {id: 1, name: 'filter'},
       ],
       pads: [
-        {id: 0, name: '1'},
-        {id: 1, name: '2'},
-        {id: 2, name: '3'},
-        {id: 3, name: '4'},
-        {id: 4, name: '5'},
-        {id: 5, name: '6'},
+        {id: 0, name: 'C4', freq: '261.63'},
+        {id: 1, name: 'D4', freq: '293.66'},
+        {id: 2, name: 'E4', freq: '329.63'},
+        {id: 3, name: 'F4', freq: '349.23'},
+        {id: 4, name: 'G4', freq: '392.00'},
+        {id: 5, name: 'A4', freq: '440.00'},
       ]
     }
   })
@@ -36,11 +36,18 @@ window.onload = function() {
 
 
 
-  audioStuff();
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+  const audioCtx = new AudioContext();
+
+
+
+
 
   var pads = document.querySelectorAll('.pad');
+
   for (let p of pads) {
-    padAction(p);
+    padAction(p, audioCtx);
   }
 
   var knobs = document.querySelectorAll('.knob');
@@ -53,13 +60,25 @@ window.onload = function() {
 }
 
 
-padAction = function(p) {
+padAction = function(p, audioCtx) {
+  var o;
+  var holdFlag = true;
   p.onmousedown = (e) => {
     e.preventDefault();
+    var o = audioCtx.createOscillator();
+    o.frequency.value = parseFloat(p.getAttribute('freq'));
+    o.connect(audioCtx.destination);
+    o.start(0);
     TweenLite.to(p, .1, {height: '60px'});
     window.onmouseup = () => {
+      o.stop(0);
+      holdFlag = false;
       TweenLite.to(p, .2, {height: '50px'});
     }
+    // p.mouseleave = () => {
+    //   o.stop(0);
+    //   holdFlag = false;
+    // }
   }
 }
 
@@ -85,37 +104,5 @@ resetColors = function() {
   for (let p of pads) {
     p.style.backgroundColor = Math.floor(Math.random()*16777215).toString(16);
   }
-
-}
-
-
-audioStuff = function() {
-
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-
-  const audioCtx = new AudioContext();
-
-  var o = audioCtx.createOscillator();
-  o.connect(audioCtx.destination);
-  o.frequency.value = 261.63;
-
-  var key = app.querySelector('#pad-1');
-
-
-  key.onmousedown = (e) => {
-    e.preventDefault();
-    holdFlag = true;
-    o.start(0);
-    key.mouseleave = () => {
-      o.stop(0);
-      holdFlag = false;
-    }
-    key.onmouseup = () => {
-      o.stop(0);
-      holdFlag = false;
-    }
-  }
-
-
 
 }
