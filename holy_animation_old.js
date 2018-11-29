@@ -34,50 +34,51 @@ window.onload = function() {
 
 
 
-
-
+  animateStuff();
   audioStuff();
 
-  var pads = document.querySelectorAll('.pad');
-  for (let p of pads) {
-    padAction(p);
-  }
 
-  var knobs = document.querySelectorAll('.knob');
-  for (let k of knobs) {
-    knobAction(k);
-  }
+
 
 
 
 }
 
 
-padAction = function(p) {
-  p.onmousedown = (e) => {
-    e.preventDefault();
-    TweenLite.to(p, .1, {height: '60px'});
-    window.onmouseup = () => {
-      TweenLite.to(p, .2, {height: '50px'});
-    }
-  }
-}
+animateStuff = function() {
 
-knobAction = function(k) {
+  var pads = app.querySelectorAll('.pad');
+  var knobs = app.querySelectorAll('.knob');
   var holdFlag = false;
-  k.onmousedown = (e) => {
-    e.preventDefault();
-    holdFlag = true;
-    document.onmousemove = (e) => {
-      if(holdFlag) {
-        TweenLite.to(k, .1, {rotation: -e.pageY});
+
+  for (let p of pads) {
+    p.onmousedown = (e) => {
+      e.preventDefault();
+      TweenLite.to(p, .1, {height: '60px'});
+      window.onmouseup = () => {
+        TweenLite.to(p, .2, {height: '50px'});
       }
     }
-    window.onmouseup = () => {
-      TweenLite.to(k, .1, {rotation: '+=0'});
-      holdFlag = false;
+  }
+
+  for (let k of knobs) {
+    k.onmousedown = (e) => {
+      e.preventDefault();
+      holdFlag = true;
+      document.onmousemove = (e) => {
+        if(holdFlag) {
+          TweenLite.to(k, .1, {rotation: -e.pageY});
+        }
+      }
+      window.onmouseup = () => {
+        TweenLite.to(k, .1, {rotation: '+=0'});
+        holdFlag = false;
+      }
     }
   }
+
+
+
 }
 
 resetColors = function() {

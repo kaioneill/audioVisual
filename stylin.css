@@ -4,6 +4,12 @@ body {
   padding: 50px;
 }
 
+.main-name {
+  padding: 0px 10px 0px 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 48px;
+}
+
 .main-panel {
   margin: auto;
   width: 400px;
@@ -12,7 +18,7 @@ body {
 
 #controls {
   /* position: relative; */
-  padding: 10px;
+  padding: 20px 0px 10px 20px;
 }
 
 .knob {
