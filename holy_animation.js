@@ -50,16 +50,18 @@ animateStuff = function() {
   var holdFlag = false;
 
   for (let p of pads) {
-    p.onmousedown = () => {
+    p.onmousedown = (e) => {
+      e.preventDefault();
       TweenLite.to(p, .1, {height: '60px', width: '60px'});
-    }
-    p.onmouseup = () => {
-      TweenLite.to(p, .2, {height: '50px', width: '50px'});
+      window.onmouseup = () => {
+        TweenLite.to(p, .2, {height: '50px', width: '50px'});
+      }
     }
   }
 
   for (let k of knobs) {
     k.onmousedown = (e) => {
+      e.preventDefault();
       holdFlag = true;
       document.onmousemove = (e) => {
         if(holdFlag) {
@@ -67,7 +69,6 @@ animateStuff = function() {
         }
       }
       window.onmouseup = () => {
-        console.log("up")
         TweenLite.to(k, .1, {rotation: '+=0'});
         holdFlag = false;
       }
