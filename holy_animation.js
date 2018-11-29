@@ -85,15 +85,18 @@ padAction = function(p, audioCtx) {
 knobAction = function(k) {
   var holdFlag = false;
   k.onmousedown = (e) => {
+    var oldY;
     e.preventDefault();
     holdFlag = true;
     document.onmousemove = (e) => {
       if(holdFlag) {
-        TweenLite.to(k, .1, {rotation: -e.pageY});
+        oldY = e.pageY;
+        setTimeout( function() {
+          TweenLite.to(k, .1, {rotation: "+=" + ((e.pageY-oldY)).toString()});
+        }, 100);
       }
     }
     window.onmouseup = () => {
-      TweenLite.to(k, .1, {rotation: '+=0'});
       holdFlag = false;
     }
   }
