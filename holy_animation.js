@@ -1,4 +1,4 @@
-
+var globalVolume = 1;
 
 window.onload = function() {
 
@@ -32,7 +32,11 @@ window.onload = function() {
   })
 
 
+  var rotateVal = $('#volume').css('transform');
 
+  document.querySelector('#volume').onmousedown = () => {
+    console.log(rotateVal);
+  }
 
 
 
@@ -41,16 +45,23 @@ window.onload = function() {
 
   const audioCtx = new AudioContext();
 
+  var gainNode = audioCtx.createGain();
+
+
+  gainNode.gain.setValueAtTime(globalVolume, audioCtx.currentTime)
+
+  gainNode.connect(audioCtx.destination);
+  var sendTo = gainNode;
 
 
 
   var pressedKeys = [];
-  keyAction(pressedKeys, audioCtx);
+  keyAction(pressedKeys, sendTo, audioCtx);
 
   var pads = document.querySelectorAll('.pad');
 
   for (let p of pads) {
-    padAction(p, audioCtx);
+    padAction(p, sendTo, audioCtx);
   }
 
   var knobs = document.querySelectorAll('.knob');
@@ -63,7 +74,7 @@ window.onload = function() {
 }
 
 
-keyAction = function(pressedKeys, audioCtx) {
+keyAction = function(pressedKeys, sendTo, audioCtx) {
 
   var keyMap = {
     'a': 'C4',
@@ -78,6 +89,7 @@ keyAction = function(pressedKeys, audioCtx) {
 
   var holdFlag = {};
   var oscs = {};
+  var gains = {};
   document.onkeydown = (e) => {
 
 
@@ -96,8 +108,10 @@ keyAction = function(pressedKeys, audioCtx) {
       if(holdFlag[pressed]) {
         if(!oscs[pressed]) {
           oscs[pressed] = audioCtx.createOscillator();
+          gains[pressed] = audioCtx.createGain();
           oscs[pressed].frequency.value = parseFloat(p.getAttribute('freq'));
-          oscs[pressed].connect(audioCtx.destination);
+          oscs[pressed].connect(gains[pressed]);
+          gains[pressed].connect(sendTo);
           oscs[pressed].start(0);
           TweenLite.to(p, .1, {height: '60px'});
           holdFlag[pressed] = false;
@@ -105,7 +119,8 @@ keyAction = function(pressedKeys, audioCtx) {
         document.onkeyup = (event) => {
           if(keyMap.hasOwnProperty(event.key)) {
             p = app.querySelector('#pad-' + keyMap[event.key]);
-            oscs[event.key].stop(0);
+            gains[event.key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.015);
+            oscs[event.key].stop(audioCtx.currentTime + .1);
             oscs[event.key] = null;
             TweenLite.to(p, .2, {height: '50px'});
             holdFlag[event.key] = true;
@@ -119,17 +134,20 @@ keyAction = function(pressedKeys, audioCtx) {
 
 
 
-padAction = function(p, audioCtx) {
+padAction = function(p, sendTo, audioCtx) {
   var o;
   p.onmousedown = (e) => {
     e.preventDefault();
     var o = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
     o.frequency.value = parseFloat(p.getAttribute('freq'));
-    o.connect(audioCtx.destination);
+    o.connect(g);
+    g.connect(sendTo);
     o.start(0);
     TweenLite.to(p, .1, {height: '60px'});
     window.onmouseup = () => {
-      o.stop(0);
+      g.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015);
+      o.stop(audioCtx.currentTime + .1);
       TweenLite.to(p, .2, {height: '50px'});
     }
     // p.mouseleave = () => {
