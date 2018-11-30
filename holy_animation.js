@@ -15,7 +15,7 @@ window.onload = function() {
   var app = new Vue({
     el: '#app',
     data: {
-      mainName: 'Sounder',
+      mainName: 'sound_mkr',
       knobs: [
         {id: 0, name: 'volume'},
         {id: 1, name: 'filter'},
@@ -27,6 +27,8 @@ window.onload = function() {
         {id: 3, name: 'F4', freq: '349.23'},
         {id: 4, name: 'G4', freq: '392.00'},
         {id: 5, name: 'A4', freq: '440.00'},
+        {id: 5, name: 'B4', freq: '493.88'},
+        {id: 5, name: 'C5', freq: '523.25'},
       ]
     }
   })
@@ -82,7 +84,9 @@ keyAction = function(pressedKeys, sendTo, audioCtx) {
     'd': 'E4',
     'f': 'F4',
     'g': 'G4',
-    'h': 'A4'
+    'h': 'A4',
+    'j': 'B4',
+    'k': 'C5',
   }
 
 
@@ -113,7 +117,7 @@ keyAction = function(pressedKeys, sendTo, audioCtx) {
           oscs[pressed].connect(gains[pressed]);
           gains[pressed].connect(sendTo);
           oscs[pressed].start(0);
-          TweenLite.to(p, .1, {height: '60px'});
+          TweenLite.to(p, .1, {height: '60px', backgroundColor: '#9900cc'});
           holdFlag[pressed] = false;
         }
         document.onkeyup = (event) => {
@@ -122,7 +126,7 @@ keyAction = function(pressedKeys, sendTo, audioCtx) {
             gains[event.key].gain.setTargetAtTime(0, audioCtx.currentTime, 0.015);
             oscs[event.key].stop(audioCtx.currentTime + .1);
             oscs[event.key] = null;
-            TweenLite.to(p, .2, {height: '50px'});
+            TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
             holdFlag[event.key] = true;
             pressedKeys.splice(pressedKeys.indexOf(event.key));
           }
@@ -144,11 +148,11 @@ padAction = function(p, sendTo, audioCtx) {
     o.connect(g);
     g.connect(sendTo);
     o.start(0);
-    TweenLite.to(p, .1, {height: '60px'});
+    TweenLite.to(p, .1, {height: '60px', backgroundColor: '#9900cc'});
     window.onmouseup = () => {
       g.gain.setTargetAtTime(0, audioCtx.currentTime, 0.015);
       o.stop(audioCtx.currentTime + .1);
-      TweenLite.to(p, .2, {height: '50px'});
+      TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
     }
     // p.mouseleave = () => {
     //   o.stop(0);
