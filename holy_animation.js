@@ -36,6 +36,7 @@ window.onload = function() {
 
 
 
+
   const AudioContext = window.AudioContext || window.webkitAudioContext;
 
   const audioCtx = new AudioContext();
@@ -43,6 +44,8 @@ window.onload = function() {
 
 
 
+  var pressedKeys = [];
+  keyAction(pressedKeys, audioCtx);
 
   var pads = document.querySelectorAll('.pad');
 
@@ -60,9 +63,64 @@ window.onload = function() {
 }
 
 
+keyAction = function(pressedKeys, audioCtx) {
+
+  var keyMap = {
+    'a': 'C4',
+    's': 'D4',
+    'd': 'E4',
+    'f': 'F4',
+    'g': 'G4',
+    'h': 'A4'
+  }
+
+
+
+  var holdFlag = {};
+  var oscs = {};
+  document.onkeydown = (e) => {
+
+
+    if(!keyMap.hasOwnProperty(e.key)) return;
+    e.preventDefault();
+    if(pressedKeys.indexOf(e.key) != -1) return;
+    pressedKeys.push(e.key);
+    holdFlag[e.key] = true;
+    // console.log(pressedKeys);
+
+    pressedKeys.forEach(function(pressed) {
+      // console.log(pressed);
+
+      p = app.querySelector('#pad-' + keyMap[pressed]);
+
+      if(holdFlag[pressed]) {
+        if(!oscs[pressed]) {
+          oscs[pressed] = audioCtx.createOscillator();
+          oscs[pressed].frequency.value = parseFloat(p.getAttribute('freq'));
+          oscs[pressed].connect(audioCtx.destination);
+          oscs[pressed].start(0);
+          TweenLite.to(p, .1, {height: '60px'});
+          holdFlag[pressed] = false;
+        }
+        document.onkeyup = (event) => {
+          if(keyMap.hasOwnProperty(event.key)) {
+            p = app.querySelector('#pad-' + keyMap[event.key]);
+            oscs[event.key].stop(0);
+            oscs[event.key] = null;
+            TweenLite.to(p, .2, {height: '50px'});
+            holdFlag[event.key] = true;
+            pressedKeys.splice(pressedKeys.indexOf(event.key));
+          }
+        }
+      }
+    });
+  }
+}
+
+
+
 padAction = function(p, audioCtx) {
   var o;
-  var holdFlag = true;
   p.onmousedown = (e) => {
     e.preventDefault();
     var o = audioCtx.createOscillator();
@@ -72,7 +130,6 @@ padAction = function(p, audioCtx) {
     TweenLite.to(p, .1, {height: '60px'});
     window.onmouseup = () => {
       o.stop(0);
-      holdFlag = false;
       TweenLite.to(p, .2, {height: '50px'});
     }
     // p.mouseleave = () => {
