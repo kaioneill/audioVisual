@@ -1,10 +1,15 @@
-var globalVolume = 1;
+var globalVolume = .5;
+var gainNode;
+var delayNode = [];
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+const audioCtx = new AudioContext();
 
 window.onload = function() {
 
   Vue.component('knob', {
     template: `<div class="knob">
-              <div class="knob-handle"></div>
+              <div class="knob-handle" ></div>
               </div>`
   })
 
@@ -27,32 +32,38 @@ window.onload = function() {
         {id: 3, name: 'F4', freq: '349.23'},
         {id: 4, name: 'G4', freq: '392.00'},
         {id: 5, name: 'A4', freq: '440.00'},
-        {id: 5, name: 'B4', freq: '493.88'},
-        {id: 5, name: 'C5', freq: '523.25'},
+        {id: 6, name: 'B4', freq: '493.88'},
+        {id: 7, name: 'C5', freq: '523.25'},
       ]
     }
   })
 
 
-  var rotateVal = $('#volume').css('transform');
 
-  document.querySelector('#volume').onmousedown = () => {
-    console.log(rotateVal);
+
+
+
+
+
+
+  gainNode = audioCtx.createGain();
+
+
+
+  for(var i=0;i<4;i++) {
+    delayNode.push(audioCtx.createDelay());
+    delayNode[i].delayTime.setValueAtTime(parseFloat(.3*i), audioCtx.currentTime);
+    delayNode[i].connect(audioCtx.destination);
   }
 
 
-
-
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-
-  const audioCtx = new AudioContext();
-
-  var gainNode = audioCtx.createGain();
-
-
-  gainNode.gain.setValueAtTime(globalVolume, audioCtx.currentTime)
-
+  for(var i=0;i<delayNode.length;i++) {
+    gainNode.gain.setValueAtTime((1-((i*2)/10))-i/10, audioCtx.currentTime);
+    gainNode.connect(delayNode[i]);
+  }
+  gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
   gainNode.connect(audioCtx.destination);
+
   var sendTo = gainNode;
 
 
@@ -112,6 +123,8 @@ keyAction = function(pressedKeys, sendTo, audioCtx) {
       if(holdFlag[pressed]) {
         if(!oscs[pressed]) {
           oscs[pressed] = audioCtx.createOscillator();
+          oscs[pressed].type = 'sine';
+          oscs[pressed].detune.value = 12;
           gains[pressed] = audioCtx.createGain();
           oscs[pressed].frequency.value = parseFloat(p.getAttribute('freq'));
           oscs[pressed].connect(gains[pressed]);
@@ -170,9 +183,17 @@ knobAction = function(k) {
     document.onmousemove = (e) => {
       if(holdFlag) {
         oldY = e.pageY;
+
+
         setTimeout( function() {
+          if(k.id == 'volume') globalVolume += (e.pageY-oldY)/400;
           TweenLite.to(k, .1, {rotation: "+=" + ((e.pageY-oldY)).toString()});
         }, 100);
+
+        if(k.id == 'volume') {
+          gainNode.gain.setValueAtTime(globalVolume, audioCtx.currentTime);
+          console.log(globalVolume);
+        }
       }
     }
     window.onmouseup = () => {
