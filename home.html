@@ -30,7 +30,8 @@
           v-for="pad in pads"
           :id="'pad-' + pad.name"
           :key="pad.id"
-          :freq="pad.freq">
+          :freq="pad.freq"
+          @mousedown.native="padPress(pad, gainNode, audioCtx)">
         </pad>
       </div>
 
