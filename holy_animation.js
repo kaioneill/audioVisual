@@ -41,10 +41,10 @@ window.onload = function() {
       gains: {},
       filters: {},
 
-      ampAttack: .3,
-      ampRelease: .5,
-      filterDecay: 2,
-      filterFreq: 1000,
+      ampAttack: .5,
+      ampRelease: .25,
+      filterDecay: 10,
+      filterFreq: 5000,
 
 
       knobs: [
@@ -54,6 +54,8 @@ window.onload = function() {
       sliders: [
         {id: 0, name: 'volume'},
         {id: 1, name: 'filter'},
+        {id: 2, name: 'attack'},
+        {id: 2, name: 'release'},
       ],
       pads: [
         {id: 0, name: 'C4', freq: '261.63'},
@@ -67,28 +69,21 @@ window.onload = function() {
       ]
     },
     methods: {
+
       padPress: function(p, sendTo, audioCtx) {
 
-        var freq = p.freq
 
-        p = document.querySelector('#pad-' + p.name)
+        var swapped = {};
+        for(var key in app.keyMap){
+          swapped[app.keyMap[key]] = key;
+        }
+        var keyEvent = {
+          key: swapped[p.name]
+        }
 
-        var o = app.audioCtx.createOscillator()
-        var g = app.audioCtx.createGain()
-        o.frequency.value = parseFloat(freq);
-        o.connect(g);
-        g.connect(sendTo);
-        o.start(0);
-        TweenLite.to(p, .1, {height: '60px', backgroundColor: '#9900cc'})
-        window.onmouseup = () => {
-          g.gain.setTargetAtTime(0, app.audioCtx.currentTime, 0.015)
-          o.stop(app.audioCtx.currentTime + .1)
-          TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'})
-        }
-        p.mouseleave = () => {
-          o.stop(0);
-          holdFlag = false;
-        }
+
+
+        app.keyPress(keyEvent, sendTo, audioCtx)
       },
       keyPress: function(e, sendTo, audioCtx) {
 
@@ -99,7 +94,7 @@ window.onload = function() {
 
 
         if(!self.keyMap.hasOwnProperty(e.key)) return
-        e.preventDefault()
+        // e.preventDefault()
         if(self.pressedKeys.indexOf(e.key) != -1) return
         self.pressedKeys.push(e.key)
         self.holdFlag[e.key] = true
@@ -108,7 +103,7 @@ window.onload = function() {
         self.pressedKeys.forEach(function(pressed) {
           // console.log(pressed);
 
-          p = document.querySelector('#pad-' + self.keyMap[pressed])
+          p = document.querySelector('#' + self.keyMap[pressed])
 
           if(self.holdFlag[pressed]) {
             if(!self.oscs[pressed]) {
@@ -129,7 +124,7 @@ window.onload = function() {
 
               self.filters[pressed] = app.audioCtx.createBiquadFilter()
               self.filters[pressed].frequency.value = app.filterFreq;
-              self.filters[event.key].frequency.linearRampToValueAtTime(0, audioCtx.currentTime + app.filterDecay + app.ampAttack);
+              self.filters[pressed].frequency.linearRampToValueAtTime(0, audioCtx.currentTime + app.filterDecay + app.ampAttack);
 
 
 
@@ -145,7 +140,27 @@ window.onload = function() {
             }
             document.onkeyup = (event) => {
               if(self.keyMap.hasOwnProperty(event.key)) {
-                p = document.querySelector('#pad-' + self.keyMap[event.key])
+                p = document.querySelector('#' + self.keyMap[event.key])
+                self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease + app.ampAttack);
+                self.oscs[event.key][0].stop(app.audioCtx.currentTime + .51)
+                self.oscs[event.key][1].stop(app.audioCtx.currentTime + .51)
+                self.oscs[event.key] = null
+                TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
+                self.holdFlag[event.key] = true
+                self.pressedKeys.splice(self.pressedKeys.indexOf(event.key))
+              }
+            }
+            document.onmouseup = (event) => {
+              var swapped = {};
+              for(var key in app.keyMap){
+                swapped[app.keyMap[key]] = key;
+              }
+              var keyEvent = {
+                key: swapped[event.target.id]
+              }
+              event.key = keyEvent.key
+              if(self.keyMap.hasOwnProperty(event.key)) {
+                p = document.querySelector('#' + self.keyMap[event.key])
                 self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease + app.ampAttack);
                 self.oscs[event.key][0].stop(app.audioCtx.currentTime + .51)
                 self.oscs[event.key][1].stop(app.audioCtx.currentTime + .51)
@@ -169,7 +184,18 @@ window.onload = function() {
           if(slider.name == 'volume') {
             app.globalVolume = sliderElement.value/100
             app.gainNode.gain.linearRampToValueAtTime(app.globalVolume, .01);
-            console.log(app.globalVolume);
+
+          }
+          if(slider.name == 'filter') {
+            app.filterFreq = sliderElement.value*100
+            Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterFreq, .01));
+
+          }
+          if(slider.name == 'attack') {
+            app.ampAttack = sliderElement.value/50
+          }
+          if(slider.name == 'release') {
+            app.ampRelease = sliderElement.value/25
           }
 
         }
@@ -198,7 +224,7 @@ window.onload = function() {
       delayGainNode.connect(self.audioCtx.destination);
 
       var delayNode = [];
-      for(var i=0;i<4;i++) {
+      for(var i=0;i<0;i++) {
         delayNode.push(self.audioCtx.createDelay());
         delayNode[i].delayTime.setValueAtTime(parseFloat(.3*i), self.audioCtx.currentTime);
         self.gainNode.connect(delayNode[i])
@@ -216,7 +242,16 @@ window.onload = function() {
 
       window.addEventListener('keydown', function(e) {
         self.keyPress(e, self.gainNode, self.audioCtx); // declared in your component methods
+
+        // var filterAmount = -5000;
+        // setInterval(function(){
+        //   Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq + filterAmount, self.audioCtx.currentTime + .4));
+        //   filterAmount = -filterAmount;
+        // }, 400);
       });
+
+
+
     }
   })
 }

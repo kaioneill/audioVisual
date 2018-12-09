@@ -24,13 +24,42 @@
       </div> -->
 
       <div id="sliders" class="col-sm-3">
-        <slider
-          v-for="slider in sliders"
-          :id="slider.name"
-          :key="slider.id"
-          :title="slider.name"
-          @mousedown.native="sliderMove(slider)">
-        </slider>
+        <div class="aligned-sliders">
+          <slider
+            :id="sliders[0].name"
+            :key="sliders[0].id"
+            :title="sliders[0].name"
+            @mousedown.native="sliderMove(sliders[0])">
+          </slider>
+          <h4>{{sliders[0].name}}</h4>
+        </div>
+        <div class="aligned-sliders">
+          <slider
+            :id="sliders[1].name"
+            :key="sliders[1].id"
+            :title="sliders[1].name"
+            @mousedown.native="sliderMove(sliders[1])">
+          </slider>
+          <h4>{{sliders[1].name}}</h4>
+        </div>
+        <div class="aligned-sliders">
+          <slider
+            :id="sliders[2].name"
+            :key="sliders[2].id"
+            :title="sliders[2].name"
+            @mousedown.native="sliderMove(sliders[2])">
+          </slider>
+          <h4>{{sliders[2].name}}</h4>
+        </div>
+        <div class="aligned-sliders">
+          <slider
+            :id="sliders[3].name"
+            :key="sliders[3].id"
+            :title="sliders[3].name"
+            @mousedown.native="sliderMove(sliders[3])">
+          </slider>
+          <h4>{{sliders[3].name}}</h4>
+        </div>
       </div>
 
       <div class="main-name col-sm-9">{{mainName}}</div>
@@ -38,7 +67,7 @@
       <div id="pads" class="col-sm-12">
         <pad
           v-for="pad in pads"
-          :id="'pad-' + pad.name"
+          :id="pad.name"
           :key="pad.id"
           :freq="pad.freq"
           @mousedown.native="padPress(pad, gainNode, audioCtx)">

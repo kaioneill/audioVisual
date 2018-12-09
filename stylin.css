@@ -4,6 +4,17 @@ body {
   padding: 50px;
 }
 
+h4 {
+  padding-top: 40px;
+  padding-right: 80px;
+  transform: rotate(90deg);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 100;
+  font-style: italic;
+  font-size: 14px;
+  z-index: 0;
+}
+
 .main-name {
   padding: 0px 10px 0px 0px;
   font-family: 'Poppins', sans-serif;
@@ -20,16 +31,24 @@ body {
 
 #controls {
   /* position: relative; */
+
   padding: 20px 0px 10px 30px;
 
 }
 
+.aligned-sliders {
+  display: inline-block;
+  width: 20px;
+
+}
 .slider {
   -webkit-appearance: slider-vertical;
+  writing-mode: bt-lr;
   height: 50px;
   width: 10px;
   position: relative;
   float: left;
+  z-index: 1;
 }
 
 
