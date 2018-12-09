@@ -18,12 +18,13 @@ window.onload = function() {
   var app = new Vue({
     el: '#app',
     data: {
-      mainName: 'sound_mkr',
+      mainName: 'the_garden',
 
       globalVolume: 0.5,
       gainNode: null,
       delayNode: [],
       audioCtx: null,
+      midiAccess: null,
 
       keyMap: {
         'a': 'C4',
@@ -40,11 +41,18 @@ window.onload = function() {
       oscs: {},
       gains: {},
       filters: {},
+      compressors: {},
 
-      ampAttack: .5,
+      ampAttack: .1,
       ampRelease: .25,
-      filterDecay: 10,
+      filterDecay: .5,
       filterFreq: 5000,
+      osc0Pitch: -24,
+      osc1Pitch: 0,
+      detune: 0,
+      osc0Shape: 'sine',
+      osc1Shape: 'sine',
+      Q: 10,
 
 
       knobs: [
@@ -55,7 +63,8 @@ window.onload = function() {
         {id: 0, name: 'volume'},
         {id: 1, name: 'filter'},
         {id: 2, name: 'attack'},
-        {id: 2, name: 'release'},
+        {id: 3, name: 'release'},
+        {id: 4, name: 'decay'},
       ],
       pads: [
         {id: 0, name: 'C4', freq: '261.63'},
@@ -109,11 +118,11 @@ window.onload = function() {
             if(!self.oscs[pressed]) {
               self.oscs[pressed] = []
               self.oscs[pressed].push(app.audioCtx.createOscillator())
-              self.oscs[pressed][0].type = 'sawtooth'
-              self.oscs[pressed][0].detune.value = 0
+              self.oscs[pressed][0].type = app.osc0Shape
+              self.oscs[pressed][0].detune.value = 100 * app.osc0Pitch
               self.oscs[pressed].push(app.audioCtx.createOscillator())
-              self.oscs[pressed][1].type = 'sawtooth'
-              self.oscs[pressed][1].detune.value = 15
+              self.oscs[pressed][1].type = app.osc1Shape
+              self.oscs[pressed][1].detune.value = 100 * app.osc1Pitch + app.detune
               self.oscs[pressed][0].frequency.value = parseFloat(p.getAttribute('freq'))
               self.oscs[pressed][1].frequency.value = parseFloat(p.getAttribute('freq'))
 
@@ -123,15 +132,34 @@ window.onload = function() {
               self.gains[pressed].gain.linearRampToValueAtTime(.5, audioCtx.currentTime + app.ampAttack);
 
               self.filters[pressed] = app.audioCtx.createBiquadFilter()
-              self.filters[pressed].frequency.value = app.filterFreq;
+              self.filters[pressed].frequency.value = app.filterFreq
+              self.filters[pressed].Q.value = app.Q
               self.filters[pressed].frequency.linearRampToValueAtTime(0, audioCtx.currentTime + app.filterDecay + app.ampAttack);
 
+
+              self.compressors[pressed] = audioCtx.createDynamicsCompressor();
+              self.compressors[pressed].threshold.setValueAtTime(-50, audioCtx.currentTime);
+              self.compressors[pressed].knee.setValueAtTime(40, audioCtx.currentTime);
+              self.compressors[pressed].ratio.setValueAtTime(12, audioCtx.currentTime);
+              self.compressors[pressed].attack.setValueAtTime(0, audioCtx.currentTime);
+              self.compressors[pressed].release.setValueAtTime(0.25, audioCtx.currentTime);
+
+
+              // var real = [1.4, 0, 1, 0, 3];
+              // var imag = [1.4, 5, -11, .2, 3];
+              //
+              //
+              // var wave = audioCtx.createPeriodicWave(real, imag, {disableNormalization: true});
+              //
+              // self.oscs[pressed][0].setPeriodicWave(wave);
+              // self.oscs[pressed][1].setPeriodicWave(wave);
 
 
               self.oscs[pressed][0].connect(self.gains[pressed])
               self.oscs[pressed][1].connect(self.gains[pressed])
               self.gains[pressed].connect(self.filters[pressed])
-              self.filters[pressed].connect(sendTo)
+              self.filters[pressed].connect(self.compressors[pressed])
+              self.compressors[pressed].connect(sendTo)
               self.oscs[pressed][0].start(0)
               self.oscs[pressed][1].start(0)
 
@@ -142,8 +170,8 @@ window.onload = function() {
               if(self.keyMap.hasOwnProperty(event.key)) {
                 p = document.querySelector('#' + self.keyMap[event.key])
                 self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease + app.ampAttack);
-                self.oscs[event.key][0].stop(app.audioCtx.currentTime + .51)
-                self.oscs[event.key][1].stop(app.audioCtx.currentTime + .51)
+                self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
+                self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
                 self.oscs[event.key] = null
                 TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
                 self.holdFlag[event.key] = true
@@ -162,8 +190,8 @@ window.onload = function() {
               if(self.keyMap.hasOwnProperty(event.key)) {
                 p = document.querySelector('#' + self.keyMap[event.key])
                 self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease + app.ampAttack);
-                self.oscs[event.key][0].stop(app.audioCtx.currentTime + .51)
-                self.oscs[event.key][1].stop(app.audioCtx.currentTime + .51)
+                self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
+                self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
                 self.oscs[event.key] = null
                 TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
                 self.holdFlag[event.key] = true
@@ -197,10 +225,31 @@ window.onload = function() {
           if(slider.name == 'release') {
             app.ampRelease = sliderElement.value/25
           }
+          if(slider.name == 'decay') {
+            app.filterDecay = sliderElement.value/200
+          }
 
         }
 
 
+      },
+      waveChange: function(waveShape, oscNum) {
+        if(oscNum == 0) {
+          app.osc0Shape = waveShape
+        }
+        if(oscNum == 1) {
+          app.osc1Shape = waveShape
+        }
+      },
+      octaveChange: function(direction) {
+        if(direction == 'up') {
+          app.osc0Pitch += 12
+          app.osc1Pitch += 12
+        }
+        if(direction == 'down') {
+          app.osc0Pitch -= 12
+          app.osc1Pitch -= 12
+        }
       }
     },
     mounted() {
@@ -210,6 +259,21 @@ window.onload = function() {
 
       const audioCtx = new AudioContext();
       self.audioCtx = audioCtx;
+
+      navigator.requestMIDIAccess()
+      .then(onMIDISuccess, onMIDIFailure);
+
+      function onMIDISuccess(midiAccess) {
+        console.log(midiAccess);
+        self.midiAccess = midiAccess;
+
+        self.midiAccess.inputs;
+        self.midiAccess.outputs;
+      }
+
+      function onMIDIFailure() {
+        console.log('Could not access your MIDI devices.');
+      }
 
       var gainNode = audioCtx.createGain();
 
@@ -243,11 +307,20 @@ window.onload = function() {
       window.addEventListener('keydown', function(e) {
         self.keyPress(e, self.gainNode, self.audioCtx); // declared in your component methods
 
-        // var filterAmount = -5000;
+        // var filterAmount = 5000;
         // setInterval(function(){
-        //   Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq + filterAmount, self.audioCtx.currentTime + .4));
-        //   filterAmount = -filterAmount;
-        // }, 400);
+        //   Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq, self.audioCtx.currentTime + .01));
+        //   Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq - filterAmount, self.audioCtx.currentTime + .4));
+        //
+        //
+        //   setTimeout(function(){
+        //     Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq + filterAmount, self.audioCtx.currentTime + .4));
+        //
+        //   }, 420);
+        //
+        // }, 940);
+
+
       });
 
 

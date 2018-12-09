@@ -23,15 +23,16 @@
         </knob>
       </div> -->
 
-      <div id="sliders" class="col-sm-3">
+      <div id="sliders" class="col-sm-4">
         <div class="aligned-sliders">
           <slider
+            value="100"
             :id="sliders[0].name"
             :key="sliders[0].id"
             :title="sliders[0].name"
             @mousedown.native="sliderMove(sliders[0])">
           </slider>
-          <h4>{{sliders[0].name}}</h4>
+          <h4 class="vertical-labels">{{sliders[0].name}}</h4>
         </div>
         <div class="aligned-sliders">
           <slider
@@ -40,16 +41,18 @@
             :title="sliders[1].name"
             @mousedown.native="sliderMove(sliders[1])">
           </slider>
-          <h4>{{sliders[1].name}}</h4>
+          <h4 class="vertical-labels">{{sliders[1].name}}</h4>
         </div>
         <div class="aligned-sliders">
           <slider
+            value="10"
+            max="20"
             :id="sliders[2].name"
             :key="sliders[2].id"
             :title="sliders[2].name"
             @mousedown.native="sliderMove(sliders[2])">
           </slider>
-          <h4>{{sliders[2].name}}</h4>
+          <h4 class="vertical-labels">{{sliders[2].name}}</h4>
         </div>
         <div class="aligned-sliders">
           <slider
@@ -58,11 +61,51 @@
             :title="sliders[3].name"
             @mousedown.native="sliderMove(sliders[3])">
           </slider>
-          <h4>{{sliders[3].name}}</h4>
+          <h4 class="vertical-labels">{{sliders[3].name}}</h4>
+        </div>
+        <div class="aligned-sliders">
+          <slider
+            :id="sliders[4].name"
+            :key="sliders[4].id"
+            :title="sliders[4].name"
+            @mousedown.native="sliderMove(sliders[4])">
+          </slider>
+          <h4 class="vertical-labels">{{sliders[4].name}}</h4>
         </div>
       </div>
 
-      <div class="main-name col-sm-9">{{mainName}}</div>
+      <div class="main-name col-sm-8">{{mainName}}</div>
+
+      <div class="settings col-sm-12">
+
+        <div class="col-sm-6">
+
+          <h4>osc0</h4>
+          <input type="radio" name="wave-shape0" value="sine" id="sine" @click="waveChange('sine', 0)" checked="true">
+          <label for="sine"><h4>sine</h4></label>
+          <input type="radio" name="wave-shape0" value="squaret" id="square" @click="waveChange('square', 0)">
+          <label for="square"><h4>square</h4></label>
+          <input type="radio" name="wave-shape0" value="saw" id="saw" @click="waveChange('sawtooth', 0)">
+          <label for="saw"><h4>saw</h4></label>
+
+          <h4>osc1</h4>
+          <input type="radio" name="wave-shape1" value="sine" id="sine" @click="waveChange('sine', 1)" checked="true">
+          <label for="sine"><h4>sine</h4></label>
+          <input type="radio" name="wave-shape1" value="squaret" id="square" @click="waveChange('square', 1)">
+          <label for="square"><h4>square</h4></label>
+          <input type="radio" name="wave-shape1" value="saw" id="saw" @click="waveChange('sawtooth', 1)">
+          <label for="saw"><h4>saw</h4></label>
+
+        </div>
+        <div class="col-sm-6">
+
+          <h4>octave</h4>
+          <input type="button" id="octaveDown" value="down" @click="octaveChange('down')">
+          <input type="button" id="octaveUp" value="up" @click="octaveChange('up')">
+
+        </div>
+
+      </div>
 
       <div id="pads" class="col-sm-12">
         <pad
@@ -73,6 +116,9 @@
           @mousedown.native="padPress(pad, gainNode, audioCtx)">
         </pad>
       </div>
+
+
+
 
       <!-- <button id="sham">danks</button> -->
     </div>
