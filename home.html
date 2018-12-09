@@ -14,13 +14,23 @@
   <body>
     <div class="main-panel" id="app">
 
-      <div id="controls" class="col-sm-3">
+      <!-- <div id="controls" class="col-sm-3">
         <knob
           v-for="knob in knobs"
           :id="knob.name"
           :key="knob.id"
           :title="knob.name">
         </knob>
+      </div> -->
+
+      <div id="sliders" class="col-sm-3">
+        <slider
+          v-for="slider in sliders"
+          :id="slider.name"
+          :key="slider.id"
+          :title="slider.name"
+          @mousedown.native="sliderMove(slider)">
+        </slider>
       </div>
 
       <div class="main-name col-sm-9">{{mainName}}</div>
