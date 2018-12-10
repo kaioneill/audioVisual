@@ -18,7 +18,7 @@ window.onload = function() {
   var app = new Vue({
     el: '#app',
     data: {
-      mainName: 'the_garden',
+      mainName: 'the_noise',
 
       midiInput: null,
 
