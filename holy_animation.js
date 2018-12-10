@@ -50,6 +50,7 @@ window.onload = function() {
       ampRelease: .5,
       filterDecay: 1,
       filterFreq: 5000,
+      filterAmount: 5000,
       osc0Pitch: 0,
       osc1Pitch: 0,
       detune: 0,
@@ -70,15 +71,16 @@ window.onload = function() {
         {id: 3, name: 'release'},
         {id: 4, name: 'decay'},
         {id: 5, name: 'delay'},
+        {id: 6, name: 'amount'},
       ],
       pads: [
         {id: 0, name: 'C4', freq: '261.63'},
         {id: 1, name: 'D4', freq: '293.66'},
-        {id: 2, name: 'E#4', freq: '311.13'},
+        {id: 2, name: 'Eb4', freq: '311.13'},
         {id: 3, name: 'F4', freq: '349.23'},
         {id: 4, name: 'G4', freq: '392.00'},
-        {id: 5, name: 'A#4', freq: '415.30'},
-        {id: 6, name: 'B#4', freq: '466.16'},
+        {id: 5, name: 'Ab4', freq: '415.30'},
+        {id: 6, name: 'Bb4', freq: '466.16'},
         {id: 7, name: 'C5', freq: '523.25'},
       ],
       noteFreqs: {
@@ -298,9 +300,9 @@ window.onload = function() {
               self.gains[pressed].gain.linearRampToValueAtTime(.5, audioCtx.currentTime + app.ampAttack);
 
               self.filters[pressed] = app.audioCtx.createBiquadFilter()
-              self.filters[pressed].frequency.value = 20000
+              self.filters[pressed].frequency.value = app.filterFreq
               self.filters[pressed].Q.value = app.Q
-              self.filters[pressed].frequency.linearRampToValueAtTime(app.filterFreq, audioCtx.currentTime + app.filterDecay + app.ampAttack);
+              self.filters[pressed].frequency.linearRampToValueAtTime(app.filterAmount, audioCtx.currentTime + app.filterDecay + app.ampAttack);
 
 
               self.compressors[pressed] = audioCtx.createDynamicsCompressor();
@@ -378,8 +380,10 @@ window.onload = function() {
                 console.log(event.key)
                 self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
                 console.log(self.oscs[event.key])
-                self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
-                self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
+                if(self.oscs[event.key] != null) {
+                  self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
+                  self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
+                }
                 self.oscs[event.key] = null
 
                 if(!midi) {
@@ -411,7 +415,13 @@ window.onload = function() {
           }
           if(slider.name == 'filter') {
             app.filterFreq = sliderElement.value*100
-            Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterFreq, .01))
+            // Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterFreq, .01))
+
+          }
+          if(slider.name == 'amount') {
+            app.filterAmount = sliderElement.value*100
+            Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterAmount, .01))
+            // Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterFreq, .01))
 
           }
           if(slider.name == 'attack') {
@@ -421,7 +431,7 @@ window.onload = function() {
             app.ampRelease = sliderElement.value/200
           }
           if(slider.name == 'decay') {
-            app.filterDecay = sliderElement.value/100
+            app.filterDecay = sliderElement.value/50
           }
           if(slider.name == 'delay') {
             app.delayTime = sliderElement.value/400
@@ -457,10 +467,14 @@ window.onload = function() {
         if(oscNum == 1) {
           app.osc1Pitch = parseInt(document.querySelector("#osc1Pitch").value)
         }
+        if(oscNum == -1) {
+          app.detune = parseInt(document.querySelector("#osc1Detune").value)
+        }
 
       }
     },
     mounted() {
+      $('[data-toggle="tooltip"]').tooltip();
       let self = this;
 
       const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -473,10 +487,21 @@ window.onload = function() {
 
 
       var gainNode = audioCtx.createGain();
+      var compressorNode = audioCtx.createDynamicsCompressor();
 
       self.gainNode = gainNode;
       self.gainNode.gain.setValueAtTime(.5, self.audioCtx.currentTime);
-      self.gainNode.connect(self.audioCtx.destination);
+      self.gainNode.connect(compressorNode);
+
+
+
+      compressorNode.threshold.setValueAtTime(-20, self.audioCtx.currentTime);
+      compressorNode.knee.setValueAtTime(40, self.audioCtx.currentTime);
+      compressorNode.ratio.setValueAtTime(4, self.audioCtx.currentTime);
+      compressorNode.attack.setValueAtTime(0, self.audioCtx.currentTime);
+      compressorNode.release.setValueAtTime(0.25, self.audioCtx.currentTime);
+      compressorNode.connect(self.audioCtx.destination)
+
 
       var delayGainNode = audioCtx.createGain();
 
@@ -489,7 +514,7 @@ window.onload = function() {
       for(var i=0;i<4;i++) {
         self.delayNodes.push(self.audioCtx.createDelay());
         self.delayNodes[i].delayTime.setValueAtTime(parseFloat(self.delayTime*i), self.audioCtx.currentTime);
-        self.gainNode.connect(self.delayNodes[i])
+        compressorNode.connect(self.delayNodes[i])
       }
 
 
