@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Poppins:bi:700">
+    <script src="https://cdn.jsdelivr.net/npm/webmidi"></script>
     <!-- <script src="AudioDrop.js"></script> -->
     <script src="holy_animation.js"></script>
     <link rel="stylesheet" type="text/css" href="stylin.css">
@@ -72,6 +73,15 @@
           </slider>
           <h4 class="vertical-labels">{{sliders[4].name}}</h4>
         </div>
+        <div class="aligned-sliders">
+          <slider
+            :id="sliders[5].name"
+            :key="sliders[5].id"
+            :title="sliders[5].name"
+            @mousedown.native="sliderMove(sliders[5])">
+          </slider>
+          <h4 class="vertical-labels">{{sliders[5].name}}</h4>
+        </div>
       </div>
 
       <div class="main-name col-sm-8">{{mainName}}</div>
@@ -98,6 +108,12 @@
 
         </div>
         <div class="col-sm-6">
+
+
+          <h4>osc0 pitch shift</h4>
+          <input type="number" step="1" class="counter" id="osc0Pitch" :value="this.$data.osc0Pitch" @change="pitchChange(0)" @click="pitchChange(0)">
+          <h4>osc1 pitch shift</h4>
+          <input type="number" step="1" class="counter" id="osc1Pitch" :value="this.$data.osc1Pitch" @change="pitchChange(1)" @click="pitchChange(1)">
 
           <h4>octave</h4>
           <input type="button" id="octaveDown" value="down" @click="octaveChange('down')">

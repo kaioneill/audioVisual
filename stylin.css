@@ -12,6 +12,10 @@ body {
   transform: rotate(90deg);
 }
 
+.counter {
+  width: 40px;
+}
+
 h4 {
 
   font-family: 'Poppins', sans-serif;
@@ -35,7 +39,7 @@ h4 {
 
 .main-panel {
   margin: auto;
-  width: 500px;
+  width: 600px;
   position: relative;
 }
 
