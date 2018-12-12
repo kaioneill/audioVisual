@@ -56,6 +56,8 @@ window.onload = function() {
       detune: 0,
       osc0Shape: 'sine',
       osc1Shape: 'sine',
+      osc0Vol: 0.5,
+      osc1Vol: 0.5,
       Q: 5,
       delayTime: .25,
       randomWave: [false, false],
@@ -74,6 +76,8 @@ window.onload = function() {
         {id: 4, name: 'decay'},
         {id: 5, name: 'delay'},
         {id: 6, name: 'amount'},
+        {id: 7, name: 'osc0Vol'},
+        {id: 8, name: 'osc1Vol'},
       ],
       pads: [
         {id: 0, name: 'C4', freq: '261.63'},
@@ -306,10 +310,13 @@ window.onload = function() {
               }
 
 
-
-              self.gains[pressed] = app.audioCtx.createGain()
-              self.gains[pressed].gain.value = 0;
-              self.gains[pressed].gain.linearRampToValueAtTime(.5, audioCtx.currentTime + app.ampAttack);
+              self.gains[pressed] = []
+              self.gains[pressed][0] = app.audioCtx.createGain()
+              self.gains[pressed][0].gain.value = 0;
+              self.gains[pressed][0].gain.linearRampToValueAtTime(app.osc0Vol, audioCtx.currentTime + app.ampAttack);
+              self.gains[pressed][1] = app.audioCtx.createGain()
+              self.gains[pressed][1].gain.value = 0;
+              self.gains[pressed][1].gain.linearRampToValueAtTime(app.osc1Vol, audioCtx.currentTime + app.ampAttack);
 
               self.filters[pressed] = app.audioCtx.createBiquadFilter()
               self.filters[pressed].frequency.value = app.filterFreq
@@ -326,9 +333,10 @@ window.onload = function() {
 
 
 
-              self.oscs[pressed][0].connect(self.gains[pressed])
-              self.oscs[pressed][1].connect(self.gains[pressed])
-              self.gains[pressed].connect(self.filters[pressed])
+              self.oscs[pressed][0].connect(self.gains[pressed][0])
+              self.oscs[pressed][1].connect(self.gains[pressed][1])
+              self.gains[pressed][0].connect(self.filters[pressed])
+              self.gains[pressed][1].connect(self.filters[pressed])
               self.filters[pressed].connect(self.compressors[pressed])
               self.compressors[pressed].connect(sendTo)
               self.oscs[pressed][0].start(0)
@@ -343,10 +351,12 @@ window.onload = function() {
             document.onkeyup = (event) => {
               if(self.keyMap.hasOwnProperty(event.key)) {
                 p = document.querySelector('#' + self.keyMap[event.key])
-                self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
+                self.gains[event.key][0].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
+                self.gains[event.key][1].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
                 self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
                 self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
                 self.oscs[event.key] = null
+                // self.gains[event.key] = null
 
 
                 TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
@@ -443,6 +453,14 @@ window.onload = function() {
             app.delayTime = sliderElement.value/400
             Object.keys(app.delayNodes).forEach(v => app.delayNodes[v].delayTime.linearRampToValueAtTime(app.delayTime*v, .01))
           }
+          if(slider.name == 'osc0Vol') {
+            app.osc0Vol = sliderElement.value/100
+            // Object.keys(app.gains).forEach(v => app.gains[v][0].gain.linearRampToValueAtTime(app.osc0Vol, .01))
+          }
+          if(slider.name == 'osc1Vol') {
+            app.osc1Vol = sliderElement.value/100
+            // Object.keys(app.gains).forEach(v => app.gains[v][1].gain.linearRampToValueAtTime(app.osc1Vol, .01))
+          }
 
         }
 
@@ -465,11 +483,11 @@ window.onload = function() {
           }
         } else {
           if(oscNum == 0) {
-            app.randomWave[0] = true
+            app.randomWave[0] = false
             app.osc0Shape = waveShape
           }
           if(oscNum == 1) {
-            app.randomWave[1] = true
+            app.randomWave[1] = false
             app.osc1Shape = waveShape
           }
         }

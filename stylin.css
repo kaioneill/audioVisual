@@ -80,7 +80,8 @@ h5 {
   width: 20px;
 
 }
-.slider {
+
+.vertical-sliders {
   -webkit-appearance: slider-vertical;
   writing-mode: bt-lr;
   height: 50px;
@@ -151,4 +152,8 @@ input[type="radio"]+label{
 
 .padding {
   padding: 10px;
+}
+
+.osc-sliders {
+  max-width: 30%;
 }

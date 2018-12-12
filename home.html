@@ -27,6 +27,7 @@
       <div id="sliders" class="col-sm-5">
         <div class="aligned-sliders">
           <slider
+            class="vertical-sliders"
             value="100"
             :id="sliders[0].name"
             :key="sliders[0].id"
@@ -37,6 +38,7 @@
         </div>
         <div class="aligned-sliders">
           <slider
+            class="vertical-sliders"
             :id="sliders[1].name"
             :key="sliders[1].id"
             :title="sliders[1].name"
@@ -46,6 +48,7 @@
         </div>
         <div class="aligned-sliders">
           <slider
+            class="vertical-sliders"
             :id="sliders[6].name"
             :key="sliders[6].id"
             :title="sliders[6].name"
@@ -55,6 +58,7 @@
         </div>
         <div class="aligned-sliders">
           <slider
+            class="vertical-sliders"
             value="10"
             max="20"
             :id="sliders[2].name"
@@ -66,6 +70,7 @@
         </div>
         <div class="aligned-sliders">
           <slider
+            class="vertical-sliders"
             :id="sliders[3].name"
             :key="sliders[3].id"
             :title="sliders[3].name"
@@ -75,6 +80,7 @@
         </div>
         <div class="aligned-sliders">
           <slider
+            class="vertical-sliders"
             :id="sliders[4].name"
             :key="sliders[4].id"
             :title="sliders[4].name"
@@ -84,6 +90,7 @@
         </div>
         <div class="aligned-sliders">
           <slider
+            class="vertical-sliders"
             :id="sliders[5].name"
             :key="sliders[5].id"
             :title="sliders[5].name"
@@ -98,6 +105,18 @@
       <div class="settings col-sm-12">
 
         <div class="col-sm-6">
+
+          <div class="col-sm-12">
+            <slider
+              class="osc-sliders"
+              max="50"
+              value="50"
+              :id="sliders[7].name"
+              :key="sliders[7].id"
+              :title="sliders[7].name"
+              @mousedown.native="sliderMove(sliders[7])">
+            </slider>
+          </div>
 
           <div class="col-sm-4">
             <h5>osc0</h5>
@@ -114,6 +133,18 @@
             <label for="saw0"><h4>saw</h4></label>
             <input type="radio" name="wave-shape0" value="randomWave" id="randomWave0" @click="waveChange('randomWave', 0)">
             <label for="randomWave0"><h4>random</h4></label>
+          </div>
+
+          <div class="col-sm-12">
+            <slider
+              class="osc-sliders"
+              max="50"
+              value="50"
+              :id="sliders[8].name"
+              :key="sliders[8].id"
+              :title="sliders[8].name"
+              @mousedown.native="sliderMove(sliders[8])">
+            </slider>
           </div>
 
           <div class="col-sm-4">
