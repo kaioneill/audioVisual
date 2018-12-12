@@ -34,11 +34,18 @@ body {
 }
 
 h4 {
-
   font-family: 'Poppins', sans-serif;
   font-weight: 100;
   font-style: italic;
   font-size: 14px;
+  z-index: 0;
+}
+
+h5 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 100;
+  font-style: italic;
+  font-size: 18px;
   z-index: 0;
 }
 
@@ -125,16 +132,23 @@ h4 {
   padding: 10px;
 }
 
-.audio-box {
-
-  height: 100%;
-  width: 100%;
+input[type="radio"]{
+    position:fixed;opacity:0
 }
 
-/* #thing {
-  background-color: green;
+
+input[type="radio"]:checked+label{
+  background-color: #ffbf00;
+  border-radius: 5px;
+  padding: 0 10px 0 10px;
+  margin:  0 10px 0 10px;
+}
+input[type="radio"]+label{
+
+  padding: 0 10px 0 10px;
+  margin:  0 10px 0 10px;
 }
 
-#thing1 {
-  background-color: red;
-} */
+.padding {
+  padding: 10px;
+}

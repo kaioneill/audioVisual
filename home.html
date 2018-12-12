@@ -100,24 +100,24 @@
         <div class="col-sm-6">
 
           <div class="col-sm-4">
-            <h4>osc0</h4>
+            <h5>osc0</h5>
           </div>
           <div class="col-sm-8">
             <input type="number" step="1" class="counter" id="osc0Pitch" :value="this.$data.osc0Pitch" @change="pitchChange(0)" @click="pitchChange(0)" data-toggle="tooltip" data-placement="top" title="osc0 pitch">
           </div>
           <div class="col-sm-12">
-            <input type="radio" name="wave-shape0" value="sine" id="sine" @click="waveChange('sine', 0)" checked="true">
-            <label for="sine"><h4>sine</h4></label>
-            <input type="radio" name="wave-shape0" value="squaret" id="square" @click="waveChange('square', 0)">
-            <label for="square"><h4>square</h4></label>
-            <input type="radio" name="wave-shape0" value="saw" id="saw" @click="waveChange('sawtooth', 0)">
-            <label for="saw"><h4>saw</h4></label>
-            <input type="radio" name="wave-shape0" value="saw" id="saw" @click="waveChange('randomWave', 0)">
-            <label for="saw"><h4>random</h4></label>
+            <input type="radio" name="wave-shape0" value="sine" id="sine0" @click="waveChange('sine', 0)" checked="true">
+            <label for="sine0"><h4>sine</h4></label>
+            <input type="radio" name="wave-shape0" value="square" id="square0" @click="waveChange('square', 0)">
+            <label for="square0"><h4>square</h4></label>
+            <input type="radio" name="wave-shape0" value="saw" id="saw0" @click="waveChange('sawtooth', 0)">
+            <label for="saw0"><h4>saw</h4></label>
+            <input type="radio" name="wave-shape0" value="randomWave" id="randomWave0" @click="waveChange('randomWave', 0)">
+            <label for="randomWave0"><h4>random</h4></label>
           </div>
 
           <div class="col-sm-4">
-            <h4>osc1</h4>
+            <h5>osc1</h5>
           </div>
           <div class="col-sm-8">
             <input type="number" step="1" class="counter" id="osc1Pitch" :value="this.$data.osc1Pitch" @change="pitchChange(1)" @click="pitchChange(1)" data-toggle="tooltip" data-placement="top" title="osc1 pitch">
@@ -125,19 +125,24 @@
           </div>
           <div class="col-sm-12">
 
-            <input type="radio" name="wave-shape1" value="sine" id="sine" @click="waveChange('sine', 1)" checked="true">
-            <label for="sine"><h4>sine</h4></label>
-            <input type="radio" name="wave-shape1" value="squaret" id="square" @click="waveChange('square', 1)">
-            <label for="square"><h4>square</h4></label>
-            <input type="radio" name="wave-shape1" value="saw" id="saw" @click="waveChange('sawtooth', 1)">
-            <label for="saw"><h4>saw</h4></label>
-            <input type="radio" name="wave-shape1" value="saw" id="saw" @click="waveChange('randomWave', 1)">
-            <label for="saw"><h4>random</h4></label>
+            <input type="radio" name="wave-shape1" value="sine" id="sine1" @click="waveChange('sine', 1)" checked="true">
+            <label for="sine1"><h4>sine</h4></label>
+            <input type="radio" name="wave-shape1" value="square" id="square1" @click="waveChange('square', 1)">
+            <label for="square1"><h4>square</h4></label>
+            <input type="radio" name="wave-shape1" value="saw" id="saw1" @click="waveChange('sawtooth', 1)">
+            <label for="saw1"><h4>saw</h4></label>
+            <input type="radio" name="wave-shape1" value="randomWave" id="randomWave1" @click="waveChange('randomWave', 1)">
+            <label for="randomWave1"><h4>random</h4></label>
           </div>
 
         </div>
         <div class="col-sm-6">
 
+          <div class="col-sm-12 padding">
+            <select id="midiSelect" style="width:80%;">
+              <option value="" disabled selected>midi in...</option>
+            </select>
+          </div>
 
 
           <div class="col-sm-4">

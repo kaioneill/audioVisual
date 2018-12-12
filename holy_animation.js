@@ -58,7 +58,7 @@ window.onload = function() {
       osc1Shape: 'sine',
       Q: 5,
       delayTime: .25,
-      randomWave: [false, -1],
+      randomWave: [false, false],
       randomWaveShape: null,
 
 
@@ -297,6 +297,16 @@ window.onload = function() {
               }
 
 
+
+              if(self.randomWave[0] == true) {
+                app.oscs[pressed][0].setPeriodicWave(app.randomWaveShape)
+              }
+              if(self.randomWave[1] == true){
+                app.oscs[pressed][1].setPeriodicWave(app.randomWaveShape)
+              }
+
+
+
               self.gains[pressed] = app.audioCtx.createGain()
               self.gains[pressed].gain.value = 0;
               self.gains[pressed].gain.linearRampToValueAtTime(.5, audioCtx.currentTime + app.ampAttack);
@@ -313,19 +323,6 @@ window.onload = function() {
               self.compressors[pressed].ratio.setValueAtTime(12, audioCtx.currentTime);
               self.compressors[pressed].attack.setValueAtTime(0, audioCtx.currentTime);
               self.compressors[pressed].release.setValueAtTime(0.25, audioCtx.currentTime);
-
-
-
-
-              if(self.randomWave[0]) {
-                if(self.randomWave[1] == 0) {
-                  app.oscs[pressed][0].setPeriodicWave(app.randomWaveShape)
-                } else {
-                  app.oscs[pressed][1].setPeriodicWave(app.randomWaveShape)
-                }
-              }
-
-
 
 
 
@@ -379,30 +376,33 @@ window.onload = function() {
                 self.pressedKeys.splice(self.pressedKeys.indexOf(event.key))
               }
             }
-            self.midiInput.addListener('noteoff', "all",
-              function (event) {
-                event = {key: app.noteFreqs[event.note.name + event.note.octave]}
 
-                console.log(event.key)
-                self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
-                console.log(self.oscs[event.key])
-                if(self.oscs[event.key] != null) {
-                  self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
-                  self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
+            if(self.midiInput) {
+              self.midiInput.addListener('noteoff', "all",
+                function (event) {
+                  event = {key: app.noteFreqs[event.note.name + event.note.octave]}
+
+                  console.log(event.key)
+                  self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
+                  console.log(self.oscs[event.key])
+                  if(self.oscs[event.key] != null) {
+                    self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
+                    self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
+                  }
+                  self.oscs[event.key] = null
+
+                  if(!midi) {
+                    TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
+                  }
+                  TweenLite.to(document.querySelector('.main-name'), .2, {color: '#000'});
+
+
+                  self.holdFlag[event.key] = true
+                  self.pressedKeys.splice(self.pressedKeys.indexOf(event.key))
+
                 }
-                self.oscs[event.key] = null
-
-                if(!midi) {
-                  TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
-                }
-                TweenLite.to(document.querySelector('.main-name'), .2, {color: '#000'});
-
-
-                self.holdFlag[event.key] = true
-                self.pressedKeys.splice(self.pressedKeys.indexOf(event.key))
-
-              }
-            );
+              );
+            }
           }
         });
       },
@@ -458,13 +458,18 @@ window.onload = function() {
             return Math.random() * 1.6
           });
           app.randomWaveShape = app.audioCtx.createPeriodicWave(real, imag, {disableNormalization: true});
-          app.randomWave = [true, 1]
+          if (oscNum == 0) {
+            app.randomWave[0] = true
+          } else {
+            app.randomWave[1] = true
+          }
         } else {
-          app.randomWave = [false, -1]
           if(oscNum == 0) {
+            app.randomWave[0] = true
             app.osc0Shape = waveShape
           }
           if(oscNum == 1) {
+            app.randomWave[1] = true
             app.osc1Shape = waveShape
           }
         }
@@ -573,18 +578,42 @@ window.onload = function() {
         // console.log(WebMidi.outputs);
 
 
-        var midiInput = WebMidi.getInputById("-1404796906");
+
+
+
+        var midiSelect = document.getElementById("midiSelect");
+        var options = WebMidi.inputs;
+
+        for(var i = 0; i < options.length; i++) {
+          var opt = options[i];
+          var el = document.createElement("option");
+          el.textContent = opt;
+          el.value = opt;
+          select.appendChild(el);
+        }
+
+        var midiInputId
+        midiSelect.onchange = function() {
+          midiInputId = midiSelect.value;
+        }
+
+
+        var midiInput = WebMidi.getInputById(midiInputId);
         self.midiInput = midiInput;
+
         // console.log(midiInput);
 
-        self.midiInput.addListener('noteon', "all",
-          function (e) {
-            // console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
-            // console.log(self.noteFreqs[e.note.name + e.note.octave]);
-            TweenLite.to(document.querySelector('.main-name'), .2, {color: '#ffff00'});
-            self.keyPress(e, self.gainNode, self.audioCtx, true);
-          }
-        );
+        if(self.midiInput) {
+
+          self.midiInput.addListener('noteon', "all",
+            function (e) {
+              // console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
+              // console.log(self.noteFreqs[e.note.name + e.note.octave]);
+              TweenLite.to(document.querySelector('.main-name'), .2, {color: '#ffff00'});
+              self.keyPress(e, self.gainNode, self.audioCtx, true);
+            }
+          );
+        }
 
 
       });
