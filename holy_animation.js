@@ -56,8 +56,10 @@ window.onload = function() {
       detune: 0,
       osc0Shape: 'sine',
       osc1Shape: 'sine',
-      Q: 10,
+      Q: 5,
       delayTime: .25,
+      randomWave: [false, -1],
+      randomWaveShape: null,
 
 
       knobs: [
@@ -313,14 +315,18 @@ window.onload = function() {
               self.compressors[pressed].release.setValueAtTime(0.25, audioCtx.currentTime);
 
 
-              // var real = [1.4, 0, 1, 0, 3];
-              // var imag = [1.4, 5, -11, .2, 3];
-              //
-              //
-              // var wave = audioCtx.createPeriodicWave(real, imag, {disableNormalization: true});
-              //
-              // self.oscs[pressed][0].setPeriodicWave(wave);
-              // self.oscs[pressed][1].setPeriodicWave(wave);
+
+
+              if(self.randomWave[0]) {
+                if(self.randomWave[1] == 0) {
+                  app.oscs[pressed][0].setPeriodicWave(app.randomWaveShape)
+                } else {
+                  app.oscs[pressed][1].setPeriodicWave(app.randomWaveShape)
+                }
+              }
+
+
+
 
 
               self.oscs[pressed][0].connect(self.gains[pressed])
@@ -443,11 +449,24 @@ window.onload = function() {
 
       },
       waveChange: function(waveShape, oscNum) {
-        if(oscNum == 0) {
-          app.osc0Shape = waveShape
-        }
-        if(oscNum == 1) {
-          app.osc1Shape = waveShape
+        if(waveShape == "randomWave") {
+          var waveLength = parseInt(Math.random() * 15)
+          var real = new Array(waveLength).fill(0).map(function(n) {
+            return Math.random() * 2.5
+          });
+          var imag = new Array(waveLength).fill(0).map(function(n) {
+            return Math.random() * 1.6
+          });
+          app.randomWaveShape = app.audioCtx.createPeriodicWave(real, imag, {disableNormalization: true});
+          app.randomWave = [true, 1]
+        } else {
+          app.randomWave = [false, -1]
+          if(oscNum == 0) {
+            app.osc0Shape = waveShape
+          }
+          if(oscNum == 1) {
+            app.osc1Shape = waveShape
+          }
         }
       },
       octaveChange: function(direction) {
