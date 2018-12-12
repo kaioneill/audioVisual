@@ -23,7 +23,7 @@ window.onload = function() {
       WebMidi: null,
       midiInput: null,
 
-      globalVolume: 0.025,
+      globalVolume: 0.05,
       gainNode: null,
       audioCtx: null,
       midiAccess: null,
@@ -429,7 +429,7 @@ window.onload = function() {
         document.onmousemove = (e) => {
 
           if(slider.name == 'volume') {
-            app.globalVolume = parseFloat(sliderElement.value/1000)
+            app.globalVolume = parseFloat(sliderElement.value/500)
             app.gainNode.gain.linearRampToValueAtTime(app.globalVolume, .01);
 
           }
@@ -542,7 +542,17 @@ window.onload = function() {
       }
     },
     mounted() {
+
+      document.body.addEventListener('click', function(){
+        var inputElement = document.getElementById('hiddenInput');
+        inputElement.style.visibility = 'visible'; // unhide the input
+        inputElement.focus(); // focus on it so keyboard pops
+        inputElement.style.visibility = 'hidden'; // hide it again
+      });
+
       $('[data-toggle="tooltip"]').tooltip();
+
+
       let self = this;
 
       const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -652,6 +662,10 @@ window.onload = function() {
 
 
       });
+
+
+
+
 
 
 
