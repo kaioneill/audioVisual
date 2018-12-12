@@ -543,7 +543,7 @@ window.onload = function() {
     },
     mounted() {
 
-      document.body.addEventListener('click', function(){
+      document.querySelector('#main-name').addEventListener('click', function(){
         var inputElement = document.getElementById('hiddenInput');
         inputElement.style.visibility = 'visible'; // unhide the input
         inputElement.focus(); // focus on it so keyboard pops
