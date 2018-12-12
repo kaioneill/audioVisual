@@ -20,9 +20,10 @@ window.onload = function() {
     data: {
       mainName: 'the_noise',
 
+      WebMidi: null,
       midiInput: null,
 
-      globalVolume: 0.5,
+      globalVolume: 0.025,
       gainNode: null,
       audioCtx: null,
       midiAccess: null,
@@ -333,6 +334,7 @@ window.onload = function() {
 
 
 
+
               self.oscs[pressed][0].connect(self.gains[pressed][0])
               self.oscs[pressed][1].connect(self.gains[pressed][1])
               self.gains[pressed][0].connect(self.filters[pressed])
@@ -353,8 +355,8 @@ window.onload = function() {
                 p = document.querySelector('#' + self.keyMap[event.key])
                 self.gains[event.key][0].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
                 self.gains[event.key][1].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
-                self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
-                self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
+                self.oscs[event.key][0].stop(app.audioCtx.currentTime + .5)
+                self.oscs[event.key][1].stop(app.audioCtx.currentTime + .5)
                 self.oscs[event.key] = null
                 // self.gains[event.key] = null
 
@@ -377,9 +379,10 @@ window.onload = function() {
               event.key = keyEvent.key
               if(self.keyMap.hasOwnProperty(event.key)) {
                 p = document.querySelector('#' + self.keyMap[event.key])
-                self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease);
-                self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
-                self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
+                self.gains[event.key][0].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
+                self.gains[event.key][1].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
+                self.oscs[event.key][0].stop(app.audioCtx.currentTime + .5)
+                self.oscs[event.key][1].stop(app.audioCtx.currentTime + .5)
                 self.oscs[event.key] = null
                 TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
                 self.holdFlag[event.key] = true
@@ -392,12 +395,13 @@ window.onload = function() {
                 function (event) {
                   event = {key: app.noteFreqs[event.note.name + event.note.octave]}
 
-                  console.log(event.key)
-                  self.gains[event.key].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
-                  console.log(self.oscs[event.key])
+                  // console.log(event.key)
+                  self.gains[event.key][0].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
+                  self.gains[event.key][1].gain.linearRampToValueAtTime(0, audioCtx.currentTime + app.ampRelease)
+                  // console.log(self.oscs[event.key])
                   if(self.oscs[event.key] != null) {
-                    self.oscs[event.key][0].stop(app.audioCtx.currentTime + 5)
-                    self.oscs[event.key][1].stop(app.audioCtx.currentTime + 5)
+                    self.oscs[event.key][0].stop(app.audioCtx.currentTime + .5)
+                    self.oscs[event.key][1].stop(app.audioCtx.currentTime + .5)
                   }
                   self.oscs[event.key] = null
 
@@ -425,40 +429,41 @@ window.onload = function() {
         document.onmousemove = (e) => {
 
           if(slider.name == 'volume') {
-            app.globalVolume = sliderElement.value/100
+            app.globalVolume = parseFloat(sliderElement.value/1000)
             app.gainNode.gain.linearRampToValueAtTime(app.globalVolume, .01);
 
           }
           if(slider.name == 'filter') {
-            app.filterFreq = sliderElement.value*100
+            app.filterFreq = parseFloat(sliderElement.value*100)
+            console.log(app.filterFreq)
             // Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterFreq, .01))
 
           }
           if(slider.name == 'amount') {
-            app.filterAmount = sliderElement.value*100
+            app.filterAmount = parseFloat(sliderElement.value*100)
             Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterAmount, .01))
             // Object.keys(app.filters).forEach(v => app.filters[v].frequency.linearRampToValueAtTime(app.filterFreq, .01))
 
           }
           if(slider.name == 'attack') {
-            app.ampAttack = sliderElement.value/50
+            app.ampAttack = parseFloat(sliderElement.value/50)
           }
           if(slider.name == 'release') {
-            app.ampRelease = sliderElement.value/200
+            app.ampRelease = parseFloat(sliderElement.value/200)
           }
           if(slider.name == 'decay') {
-            app.filterDecay = sliderElement.value/50
+            app.filterDecay = parseFloat(sliderElement.value/50)
           }
           if(slider.name == 'delay') {
-            app.delayTime = sliderElement.value/400
+            app.delayTime = parseFloat(sliderElement.value/400)
             Object.keys(app.delayNodes).forEach(v => app.delayNodes[v].delayTime.linearRampToValueAtTime(app.delayTime*v, .01))
           }
           if(slider.name == 'osc0Vol') {
-            app.osc0Vol = sliderElement.value/100
+            app.osc0Vol = parseFloat(sliderElement.value/100)/10
             // Object.keys(app.gains).forEach(v => app.gains[v][0].gain.linearRampToValueAtTime(app.osc0Vol, .01))
           }
           if(slider.name == 'osc1Vol') {
-            app.osc1Vol = sliderElement.value/100
+            app.osc1Vol = parseFloat(sliderElement.value/100)/10
             // Object.keys(app.gains).forEach(v => app.gains[v][1].gain.linearRampToValueAtTime(app.osc1Vol, .01))
           }
 
@@ -513,6 +518,27 @@ window.onload = function() {
           app.detune = parseInt(document.querySelector("#osc1Detune").value)
         }
 
+      },
+      midiSourceChange: function() {
+        var midiSelect = document.getElementById("midiSelect")
+
+        var midiInputId = midiSelect.value
+
+        var midiInput = app.WebMidi.getInputById(midiInputId)
+        app.midiInput = midiInput;
+
+        // console.log(midiInputId)
+
+        app.midiInput.addListener('noteon', "all",
+          function (e) {
+            // console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
+            // console.log(self.noteFreqs[e.note.name + e.note.octave]);
+            TweenLite.to(document.querySelector('.main-name'), .2, {color: '#ffff00'})
+            app.keyPress(e, app.gainNode, app.audioCtx, true)
+          }
+        );
+
+
       }
     },
     mounted() {
@@ -532,14 +558,14 @@ window.onload = function() {
       var compressorNode = audioCtx.createDynamicsCompressor();
 
       self.gainNode = gainNode;
-      self.gainNode.gain.setValueAtTime(.5, self.audioCtx.currentTime);
+      self.gainNode.gain.setValueAtTime(self.globalVolume, self.audioCtx.currentTime);
       self.gainNode.connect(compressorNode);
 
 
 
-      compressorNode.threshold.setValueAtTime(-20, self.audioCtx.currentTime);
+      compressorNode.threshold.setValueAtTime(-50, self.audioCtx.currentTime);
       compressorNode.knee.setValueAtTime(40, self.audioCtx.currentTime);
-      compressorNode.ratio.setValueAtTime(4, self.audioCtx.currentTime);
+      compressorNode.ratio.setValueAtTime(12, self.audioCtx.currentTime);
       compressorNode.attack.setValueAtTime(0, self.audioCtx.currentTime);
       compressorNode.release.setValueAtTime(0.25, self.audioCtx.currentTime);
       compressorNode.connect(self.audioCtx.destination)
@@ -596,32 +622,22 @@ window.onload = function() {
         // console.log(WebMidi.outputs);
 
 
+        self.WebMidi = WebMidi;
 
-
-
-        var midiSelect = document.getElementById("midiSelect");
-        var options = WebMidi.inputs;
+        var options = self.WebMidi.inputs;
 
         for(var i = 0; i < options.length; i++) {
           var opt = options[i];
           var el = document.createElement("option");
-          el.textContent = opt;
-          el.value = opt;
-          select.appendChild(el);
-        }
-
-        var midiInputId
-        midiSelect.onchange = function() {
-          midiInputId = midiSelect.value;
+          el.textContent = opt._midiInput.name;
+          el.value = opt._midiInput.id;
+          midiSelect.appendChild(el);
         }
 
 
-        var midiInput = WebMidi.getInputById(midiInputId);
-        self.midiInput = midiInput;
-
-        // console.log(midiInput);
-
-        if(self.midiInput) {
+        if(options.length > 0) {
+          self.midiInput = self.WebMidi.getInputById(options[0].id);
+          document.querySelector("#midiSelect").selectedIndex = 1;
 
           self.midiInput.addListener('noteon', "all",
             function (e) {
@@ -632,6 +648,7 @@ window.onload = function() {
             }
           );
         }
+
 
 
       });

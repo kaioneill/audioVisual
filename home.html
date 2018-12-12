@@ -28,7 +28,8 @@
         <div class="aligned-sliders">
           <slider
             class="vertical-sliders"
-            value="100"
+            max="50"
+            value="25"
             :id="sliders[0].name"
             :key="sliders[0].id"
             :title="sliders[0].name"
@@ -60,6 +61,7 @@
           <slider
             class="vertical-sliders"
             value="10"
+            min="1"
             max="20"
             :id="sliders[2].name"
             :key="sliders[2].id"
@@ -70,6 +72,7 @@
         </div>
         <div class="aligned-sliders">
           <slider
+            min="5"
             class="vertical-sliders"
             :id="sliders[3].name"
             :key="sliders[3].id"
@@ -139,6 +142,7 @@
             <slider
               class="osc-sliders"
               max="50"
+              min="0"
               value="50"
               :id="sliders[8].name"
               :key="sliders[8].id"
@@ -170,8 +174,8 @@
         <div class="col-sm-6">
 
           <div class="col-sm-12 padding">
-            <select id="midiSelect" style="width:80%;">
-              <option value="" disabled selected>midi in...</option>
+            <select id="midiSelect" style="width:80%;" @change="midiSourceChange">
+              <option value="" disabled selected >no midi devices...</option>
             </select>
           </div>
 
