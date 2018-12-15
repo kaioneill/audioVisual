@@ -32,18 +32,23 @@ window.onload = function() {
 
       keyMap: {
         'a': 'C4',
+        'w': 'C#4',
         's': 'D4',
+        'e': 'D#4',
         'd': 'Eb4',
         'f': 'F4',
         'g': 'G4',
+        'y': 'G#4',
         'h': 'Ab4',
+        'u': 'A#4',
         'j': 'Bb4',
         'k': 'C5',
       },
       pressedKeys: [],
-      holdFlag: {},
+      // holdFlag: {},
       oscs: {},
       gains: {},
+      levels: {},
       filters: {},
       compressors: {},
 
@@ -264,7 +269,7 @@ window.onload = function() {
           // e.preventDefault()
           if(self.pressedKeys.indexOf(e.key) != -1) return
           self.pressedKeys.push(e.key)
-          self.holdFlag[e.key] = true
+          // self.holdFlag[e.key] = true
           // console.log(pressedKeys);
 
         } else {
@@ -272,7 +277,7 @@ window.onload = function() {
           e = {key: app.noteFreqs[e.note.name + e.note.octave]}
 
           self.pressedKeys.push(e.key)
-          self.holdFlag[e.key] = true
+          // self.holdFlag[e.key] = true
 
         }
 
@@ -283,7 +288,7 @@ window.onload = function() {
             p = document.querySelector('#' + self.keyMap[pressed])
           }
 
-          if(self.holdFlag[pressed]) {
+          // if(self.holdFlag[pressed]) {
             if(!self.oscs[pressed]) {
               self.oscs[pressed] = []
               self.oscs[pressed][0] = (app.audioCtx.createOscillator())
@@ -311,6 +316,15 @@ window.onload = function() {
               }
 
 
+              self.levels[pressed] = []
+              self.levels[pressed][0] = app.audioCtx.createGain()
+              self.levels[pressed][0].gain.value = 0;
+              self.levels[pressed][0].gain.linearRampToValueAtTime(app.osc0Vol, audioCtx.currentTime + .01);
+              self.levels[pressed][1] = app.audioCtx.createGain()
+              self.levels[pressed][1].gain.value = 0;
+              self.levels[pressed][1].gain.linearRampToValueAtTime(app.osc1Vol, audioCtx.currentTime + .01);
+
+
               self.gains[pressed] = []
               self.gains[pressed][0] = app.audioCtx.createGain()
               self.gains[pressed][0].gain.value = 0;
@@ -318,6 +332,7 @@ window.onload = function() {
               self.gains[pressed][1] = app.audioCtx.createGain()
               self.gains[pressed][1].gain.value = 0;
               self.gains[pressed][1].gain.linearRampToValueAtTime(app.osc1Vol, audioCtx.currentTime + app.ampAttack);
+
 
               self.filters[pressed] = app.audioCtx.createBiquadFilter()
               self.filters[pressed].frequency.value = app.filterFreq
@@ -337,8 +352,10 @@ window.onload = function() {
 
               self.oscs[pressed][0].connect(self.gains[pressed][0])
               self.oscs[pressed][1].connect(self.gains[pressed][1])
-              self.gains[pressed][0].connect(self.filters[pressed])
-              self.gains[pressed][1].connect(self.filters[pressed])
+              self.gains[pressed][0].connect(self.levels[pressed][0])
+              self.gains[pressed][1].connect(self.levels[pressed][1])
+              self.levels[pressed][0].connect(self.filters[pressed])
+              self.levels[pressed][1].connect(self.filters[pressed])
               self.filters[pressed].connect(self.compressors[pressed])
               self.compressors[pressed].connect(sendTo)
               self.oscs[pressed][0].start(0)
@@ -348,8 +365,8 @@ window.onload = function() {
                 TweenLite.to(p, .1, {height: '60px', backgroundColor: '#9900cc'})
               }
 
-              self.holdFlag[pressed] = false
-            }
+              // self.holdFlag[pressed] = false
+            // }
             document.onkeyup = (event) => {
               if(self.keyMap.hasOwnProperty(event.key)) {
                 p = document.querySelector('#' + self.keyMap[event.key])
@@ -364,7 +381,7 @@ window.onload = function() {
                 TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
 
 
-                self.holdFlag[event.key] = true
+                // self.holdFlag[event.key] = true
                 self.pressedKeys.splice(self.pressedKeys.indexOf(event.key))
               }
             }
@@ -385,7 +402,7 @@ window.onload = function() {
                 self.oscs[event.key][1].stop(app.audioCtx.currentTime + .5)
                 self.oscs[event.key] = null
                 TweenLite.to(p, .2, {height: '50px', backgroundColor: '#cc0066'});
-                self.holdFlag[event.key] = true
+                // self.holdFlag[event.key] = true
                 self.pressedKeys.splice(self.pressedKeys.indexOf(event.key))
               }
             }
@@ -411,7 +428,7 @@ window.onload = function() {
                   TweenLite.to(document.querySelector('.main-name'), .2, {color: '#000'});
 
 
-                  self.holdFlag[event.key] = true
+                  // self.holdFlag[event.key] = true
                   self.pressedKeys.splice(self.pressedKeys.indexOf(event.key))
 
                 }
@@ -459,12 +476,12 @@ window.onload = function() {
             Object.keys(app.delayNodes).forEach(v => app.delayNodes[v].delayTime.linearRampToValueAtTime(app.delayTime*v, .01))
           }
           if(slider.name == 'osc0Vol') {
-            app.osc0Vol = parseFloat(sliderElement.value/100)/10
-            // Object.keys(app.gains).forEach(v => app.gains[v][0].gain.linearRampToValueAtTime(app.osc0Vol, .01))
+            app.osc0Vol = parseFloat(sliderElement.value/100)
+            Object.keys(app.levels).forEach(v => app.levels[v][0].gain.linearRampToValueAtTime(app.osc0Vol, .01))
           }
           if(slider.name == 'osc1Vol') {
-            app.osc1Vol = parseFloat(sliderElement.value/100)/10
-            // Object.keys(app.gains).forEach(v => app.gains[v][1].gain.linearRampToValueAtTime(app.osc1Vol, .01))
+            app.osc1Vol = parseFloat(sliderElement.value/100)
+            Object.keys(app.levels).forEach(v => app.levels[v][1].gain.linearRampToValueAtTime(app.osc1Vol, .01))
           }
 
         }
