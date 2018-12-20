@@ -28,6 +28,7 @@ window.onload = function() {
       audioCtx: null,
       midiAccess: null,
       delayNodes: [],
+      masterFilter: null,
 
 
       keyMap: {
@@ -68,6 +69,7 @@ window.onload = function() {
       delayTime: .25,
       randomWave: [false, false],
       randomWaveShape: null,
+      lfoRate: .1,
 
 
       knobs: [
@@ -260,6 +262,9 @@ window.onload = function() {
       keyPress: function(e, sendTo, audioCtx, midi) {
 
         let self = this
+
+
+
 
 
 
@@ -583,11 +588,18 @@ window.onload = function() {
 
       var gainNode = audioCtx.createGain();
       var compressorNode = audioCtx.createDynamicsCompressor();
+      var masterFilter = audioCtx.createBiquadFilter();
+      self.masterFilter = masterFilter
 
       self.gainNode = gainNode;
       self.gainNode.gain.setValueAtTime(self.globalVolume, self.audioCtx.currentTime);
-      self.gainNode.connect(compressorNode);
+      self.gainNode.connect(self.masterFilter);
 
+
+      self.masterFilter.frequency.value = self.filterFreq
+      self.masterFilter.Q.value = 0
+      self.masterFilter.frequency.linearRampToValueAtTime(self.filterAmount, self.audioCtx.currentTime + .01);
+      self.masterFilter.connect(compressorNode);
 
 
       compressorNode.threshold.setValueAtTime(-50, self.audioCtx.currentTime);
@@ -622,24 +634,26 @@ window.onload = function() {
 
       var sendTo = self.gainNode;
 
+
+              // filter lfo
+      setInterval(function(){
+        console.log("out")
+        app.masterFilter.frequency.linearRampToValueAtTime(app.filterFreq - (app.filterFreq-app.filterAmount), app.audioCtx.currentTime + app.lfoRate)
+
+        setTimeout(function(){
+          console.log("in")
+          app.masterFilter.frequency.linearRampToValueAtTime(app.filterFreq + (app.filterFreq-app.filterAmount), app.audioCtx.currentTime + app.lfoRate)
+        }, 110);
+
+      }, 220);
+
       window.addEventListener('keydown', function(e) {
         self.keyPress(e, self.gainNode, self.audioCtx, false); // declared in your component methods
 
 
-        // console.log(self.oscs);
 
-        // var filterAmount = 5000;
-        // setInterval(function(){
-        //   Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq, self.audioCtx.currentTime + .01));
-        //   Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq - filterAmount, self.audioCtx.currentTime + .4));
-        //
-        //
-        //   setTimeout(function(){
-        //     Object.keys(self.filters).forEach(v => self.filters[v].frequency.linearRampToValueAtTime(self.filterFreq + filterAmount, self.audioCtx.currentTime + .4));
-        //
-        //   }, 420);
-        //
-        // }, 940);
+
+
 
 
       });
