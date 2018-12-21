@@ -5,6 +5,7 @@
 </template>
 
 <script>
+
 import SynthThing from './components/SynthThing.vue'
 
 export default {
@@ -16,6 +17,7 @@ export default {
 </script>
 
 <style>
+
 #app {
   min-width: 100%;
   min-height: 100%;
