@@ -2,7 +2,7 @@
   .main-panel
     .main-name.col-sm-7#main-name {{this.mainName}}
     
-    oscillator(v-if="this.contentLoaded", :audioCtx="this.audioCtx")
+    oscillator(v-if="this.contentLoaded" :audioCtx="this.audioCtx")
 
     
 

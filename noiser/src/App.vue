@@ -1,6 +1,6 @@
 <template lang="pug">
   #app
-    synth-thing(v-if="this.contentLoaded", :audioCtx="this.audioCtx")
+    synth-thing(v-if="this.contentLoaded" :audioCtx="this.audioCtx")
   
 </template>
 

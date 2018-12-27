@@ -9,7 +9,7 @@
         input(type="number" step="1" class="counter" id="osc1Pitch" :value="this.$data.osc1Pitch" @change="pitchChange(1)" @click="pitchChange(1)" data-toggle="tooltip" data-placement="top" title="osc1 pitch")
         input(type="number" step="1" class="counter" id="osc1Detune" :value="this.$data.detune" @change="pitchChange(-1)" @click="pitchChange(-1)" data-toggle="tooltip" data-placement="top" title="osc1 detune")
     .col-sm-12
-      vue-slider.osc-vol(tooltip="hover" @change="volChange()")
+      vue-slider.osc-vol(v-model="oscVol" @input="volChange()" v-bind="this.options")
       
     
     
@@ -47,6 +47,24 @@ export default {
       oscVol: 0,
       osc: null,
       gainNode: null,
+      options: {
+        tooltip: "hover",
+        min: 0,
+        max: 1.0,
+        interval: 0.01,
+        tooltipStyle: {
+          "backgroundColor": "#ffbf00",
+          "borderColor": "#ffbf00",
+          "color": "#000",
+          "fontFamily": "'Poppins', sans-serif",
+          "fontWeight": "100",
+          "fontStyle": "italic",
+          "fontSize": "14px",
+        },
+        processStyle: {
+          "backgroundColor": "#ffbf00",
+        }
+      }
     }
   },
   methods: {
@@ -59,14 +77,13 @@ export default {
       this.osc.stop(0)
     },
     volChange() {
-      console.log(this.oscVol)
-      this.gainNode.gain.value.linearRampToValueAtTime(parseFloat(this.oscVol), .01)
+      this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), .01)
     }
   },
   mounted() {
     this.gainNode = this.audioCtx.createGain();
-    this.gainNode.connect(this.audioCtx.destination)
-    this.gainNode.gain.value = 0
+    this.gainNode.connect(this.audioCtx.destination);
+    this.gainNode.gain.value = 0;
   }
 }
 </script>
