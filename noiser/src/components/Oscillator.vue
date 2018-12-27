@@ -1,33 +1,35 @@
 <template lang="pug">
   #osc
-    .col-sm-12
-      .col-sm-2
+    
+    .row
+      .col-sm-3
         h5 osc1
-        input#start(type="button" value="start" @click="startOsc()")
-        input#stop(type="button" value="stop" @click="stopOsc()")
-      .col-sm-8
-        input(type="number" step="1" class="counter" id="osc1Pitch" :value="this.$data.osc1Pitch" @change="pitchChange(1)" @click="pitchChange(1)" data-toggle="tooltip" data-placement="top" title="osc1 pitch")
-        input(type="number" step="1" class="counter" id="osc1Detune" :value="this.$data.detune" @change="pitchChange(-1)" @click="pitchChange(-1)" data-toggle="tooltip" data-placement="top" title="osc1 detune")
-    .col-sm-12
-      vue-slider.osc-vol(v-model="oscVol" @input="volChange()" v-bind="this.options")
+        //input#start(type="button" value="start" @click="startOsc()")
+        //input#stop(type="button" value="stop" @click="stopOsc()")
+      .col-sm
+        input(type="number" step="1" class="counter" id="osc1Pitch" :value="this.oscPitch" @change="pitchChange(1)" @click="pitchChange(1)" data-toggle="tooltip" data-placement="top" title="osc pitch")
+        input(type="number" step="1" class="counter" id="osc1Detune" :value="this.oscDetune" @change="pitchChange(-1)" @click="pitchChange(-1)" data-toggle="tooltip" data-placement="top" title="osc detune")
+    .row
+      .col-sm
+        vue-slider.osc-vol(v-model="oscVol" @input="volChange()" v-bind="this.options")
       
     
     
 
-    .col-sm-12
-
-      input(type="radio" name="wave-shape1" value="sine" id="sine1" @click="waveChange('sine', 1)" checked="true")
-      label(for="sine1")
-        h4 sine
-      input(type="radio" name="wave-shape1" value="square" id="square1" @click="waveChange('square', 1)")
-      label(for="square1")
-        h4 square
-      input(type="radio" name="wave-shape1" value="saw" id="saw1" @click="waveChange('sawtooth', 1)")
-      label(for="saw1")
-        h4 saw
-      input(type="radio" name="wave-shape1" value="randomWave" id="randomWave1" @click="waveChange('randomWave', 1)")
-      label(for="randomWave1")
-        h4 random
+    .row
+      .col-sm
+        input(type="radio" name="wave-shape1" value="sine" id="sine1" @click="waveChange('sine', 1)" checked="true")
+        label(for="sine1")
+          h4 sine
+        input(type="radio" name="wave-shape1" value="square" id="square1" @click="waveChange('square', 1)")
+        label(for="square1")
+          h4 square
+        input(type="radio" name="wave-shape1" value="saw" id="saw1" @click="waveChange('sawtooth', 1)")
+        label(for="saw1")
+          h4 saw
+        input(type="radio" name="wave-shape1" value="randomWave" id="randomWave1" @click="waveChange('randomWave', 1)")
+        label(for="randomWave1")
+          h4 random
 
 </template>
 
@@ -44,8 +46,10 @@ export default {
   ],
   data() {
     return {
-      oscVol: 0,
       osc: null,
+      oscVol: 0,
+      oscPitch: 0,
+      oscDetune: 0,
       gainNode: null,
       options: {
         tooltip: "hover",
@@ -116,6 +120,17 @@ export default {
 
 .counter {
   width: 40px;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #cccccc;
+  margin: 2px;
+  
+  font-family: 'Poppins', sans-serif;
+  font-weight: 100;
+  font-style: italic;
+  font-size: 14px;
+  text-align: center;
 }
 
 

@@ -34,7 +34,7 @@ export default {
     }
   },
   mounted() {
-    this.init()
+    this.init();
   }
 }
 </script>
