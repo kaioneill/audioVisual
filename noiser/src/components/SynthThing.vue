@@ -1,8 +1,8 @@
 <template lang="pug">
   .main-panel
-    .main-name.col-sm-7#main-name {{mainName}}
+    .main-name.col-sm-7#main-name {{this.mainName}}
     
-    oscillator
+    oscillator(v-if="this.contentLoaded", :audioCtx="this.audioCtx")
 
     
 
@@ -17,13 +17,22 @@ export default {
     "oscillator": Oscillator
     
   },
-  props: {
-  
-  },
+  props: [
+    "audioCtx"
+  ],
   data() {
     return {
-      mainName: 'the_noise'
+      mainName: 'the_noise',
+      contentLoaded: false,
     }
+  },
+  methods: {
+    init() {
+      this.contentLoaded = true;
+    }
+  },
+  mounted() {
+    this.init()
   }
 }
 </script>
