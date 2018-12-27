@@ -1,7 +1,7 @@
 <template lang="pug">
   #osc
     
-    .row
+    .row.center
       .col-sm-3
         h5 osc1
         //input#start(type="button" value="start" @click="startOsc()")
@@ -97,7 +97,11 @@ export default {
 
 
 #osc {
-  width: 200px;
+  width: 170px;
+}
+
+.center {
+  margin: auto;
 }
 
 
@@ -170,7 +174,6 @@ input[type="radio"]+label{
 }
 
 .osc-vol {
-  
 }
 
 </style>
