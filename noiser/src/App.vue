@@ -30,13 +30,13 @@ export default {
         'w': 'C#4',
         's': 'D4',
         'e': 'D#4',
-        'd': 'Eb4',
+        'd': 'E4',
         'f': 'F4',
         'g': 'G4',
         'y': 'G#4',
-        'h': 'Ab4',
+        'h': 'A4',
         'u': 'A#4',
-        'j': 'Bb4',
+        'j': 'B4',
         'k': 'C5',
       },
 
@@ -52,12 +52,16 @@ export default {
       this.contentLoaded = true;
     },
     keyPress(e) {
-      var note = this.keyMap[e.key]
-      this.$refs.oscillator.startOsc(note)
+      var note
+      if((note = this.keyMap[e.key]) != null) {
+        this.$refs.oscillator.startOsc(note)
+      }
     },
     keyRelease(e) {
-      var note = this.keyMap[e.key]
-      this.$refs.oscillator.stopOsc(note)
+      var note
+      if((note = this.keyMap[e.key]) != null) {
+        this.$refs.oscillator.stopOsc(note)
+      }
     }
   },
   mounted() {
