@@ -7,8 +7,8 @@
         //input#start(type="button" value="start" @click="startOsc()")
         //input#stop(type="button" value="stop" @click="stopOsc()")
       .col-sm
-        input(type="number" step="1" class="counter" id="osc1Pitch" :value="this.oscPitch" @change="pitchChange(1)" @click="pitchChange(1)" data-toggle="tooltip" data-placement="top" title="osc pitch")
-        input(type="number" step="1" class="counter" id="osc1Detune" :value="this.oscDetune" @change="pitchChange(-1)" @click="pitchChange(-1)" data-toggle="tooltip" data-placement="top" title="osc detune")
+        input(type="number" step="1" class="counter" id="osc1Pitch" v-model="this.oscPitchShift" @input="pitchChange()" data-toggle="tooltip" data-placement="top" title="osc pitch")
+        input(type="number" step="1" class="counter" id="osc1Detune" v-model="this.oscDetune" @input="detuneChange()" data-toggle="tooltip" data-placement="top" title="osc detune")
     .row
       .col-sm
         vue-slider.osc-vol(v-model="oscVol" @input="volChange()" v-bind="this.options")
@@ -18,16 +18,16 @@
 
     .row
       .col-sm
-        input(type="radio" name="wave-shape1" value="sine" id="sine1" @click="waveChange('sine', 1)" checked="true")
+        input(type="radio" name="wave-shape1" value="sine" id="sine1" @click="waveChange('sine')" checked="true")
         label(for="sine1")
           h4 sine
-        input(type="radio" name="wave-shape1" value="square" id="square1" @click="waveChange('square', 1)")
+        input(type="radio" name="wave-shape1" value="square" id="square1" @click="waveChange('square')")
         label(for="square1")
           h4 square
-        input(type="radio" name="wave-shape1" value="saw" id="saw1" @click="waveChange('sawtooth', 1)")
+        input(type="radio" name="wave-shape1" value="saw" id="saw1" @click="waveChange('sawtooth')")
         label(for="saw1")
           h4 saw
-        input(type="radio" name="wave-shape1" value="randomWave" id="randomWave1" @click="waveChange('randomWave', 1)")
+        input(type="radio" name="wave-shape1" value="randomWave" id="randomWave1" @click="waveChange('randomWave')")
         label(for="randomWave1")
           h4 random
 
@@ -48,8 +48,11 @@ export default {
     return {
       oscs: {},
       oscVol: 0,
-      oscPitch: 0,
+      oscPitchShift: 0,
       oscDetune: 0,
+      oscType: 'sine',
+      randomWave: false,
+      randomWaveShape: null,
       gainNode: null,
       pressedNotes: {},
       options: {
@@ -57,6 +60,7 @@ export default {
         min: 0,
         max: 1.0,
         interval: 0.01,
+        value: 0.50,
         tooltipStyle: {
           "backgroundColor": "#ffbf00",
           "borderColor": "#ffbf00",
@@ -224,7 +228,14 @@ export default {
         self.pressedNotes[note] = self.noteFreqs[note]
         
         self.oscs[note] = self.audioCtx.createOscillator()
+        
+        self.oscs[note].type = self.oscType
+        if(self.randomWave == true) {
+          self.oscs[note].setPeriodicWave(self.randomWaveShape)
+        }
+        
         self.oscs[note].frequency.value = self.noteFreqs[note]
+        self.oscs[note].detune.value = (100 * self.oscPitchShift) + self.oscDetune
         
         self.oscs[note].connect(self.gainNode)
         self.oscs[note].start(0)
@@ -238,6 +249,28 @@ export default {
     },
     volChange() {
       this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .05)
+    },
+    pitchChange() {
+      
+    },
+    detuneChange() {
+      
+    },
+    waveChange(waveShape) {
+      if(waveShape == "randomWave") {
+        var waveLength = parseInt(Math.random() * 15)
+        var real = new Array(waveLength).fill(0).map(function(n) {
+          return Math.random() * 2.5
+        });
+        var imag = new Array(waveLength).fill(0).map(function(n) {
+          return Math.random() * 1.6
+        });
+        this.randomWaveShape = this.audioCtx.createPeriodicWave(real, imag, {disableNormalization: true})
+        this.randomWave = true
+      } else {
+        this.randomWave = false
+        this.oscType = waveShape
+      }
     }
   },
   mounted() {
