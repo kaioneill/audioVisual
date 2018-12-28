@@ -237,7 +237,7 @@ export default {
       self.oscs[note].stop(0)
     },
     volChange() {
-      this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), .01)
+      this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .05)
     }
   },
   mounted() {
