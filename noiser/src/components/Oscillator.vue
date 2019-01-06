@@ -33,8 +33,9 @@
 
 <script>
 
-import { EventBus } from '../event-bus.js'
+import { EventBus } from '../event-bus.js';
 import vueSlider from 'vue-slider-component';
+import Envelope from './Envelope.vue';
 
 export default {
   name: 'oscillator',
@@ -223,6 +224,8 @@ export default {
   methods: {
     startOsc (note) {
       var self = this
+      
+      
 
       if(self.pressedNotes[note] == null) {
         self.pressedNotes[note] = self.noteFreqs[note]
@@ -237,14 +240,18 @@ export default {
         self.oscs[note].frequency.value = self.noteFreqs[note]
         self.oscs[note].detune.value = (100 * self.oscPitchShift) + self.oscDetune
 
-        self.oscs[note].connect(self.gainNode)
+        // self.oscs[note].connect(self.gainNode)
         self.oscs[note].start(0)
+        
+        EventBus.$emit('env-start', {'note': note, 'osc': self.oscs[note]})
       }
 
     },
     stopOsc (note) {
       var self = this
-      self.pressedNotes[note] = null
+      EventBus.$emit('env-stop', {'note': note, 'osc': self.oscs[note]})
+      
+      delete self.pressedNotes[note]
       self.oscs[note].stop(0)
     },
     volChange() {
@@ -275,15 +282,17 @@ export default {
   },
   mounted() {
     this.gainNode = this.audioCtx.createGain();
-    this.gainNode.connect(this.audioCtx.destination);
+    // this.gainNode.connect(this.audioCtx.destination);
     this.gainNode.gain.value = 0;
     
     
-    EventBus.$on('key-press', note => {
+    EventBus.$on('arp-start', note => {
       this.startOsc(note);
     });
-    EventBus.$on('key-release', note => {
-      this.stopOsc(note);
+    EventBus.$on('arp-stop', note => {
+      if(this.oscs[note] != null) {
+        this.stopOsc(note);
+      }
     });
     
   }

@@ -3,21 +3,24 @@
     .main-panel
       .main-name.col-sm-7#main-name {{this.mainName}}
       oscillator(ref="oscillator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
-      //arpeggiator(ref="arpeggiator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+      envelope(ref="envelope" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+      arpeggiator(ref="arpeggiator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
 
 
 </template>
 
 <script>
 
-import { EventBus } from './event-bus.js'
-import Oscillator from './components/Oscillator.vue'
-import Arpeggiator from './components/Arpeggiator.vue'
+import { EventBus } from './event-bus.js';
+import Oscillator from './components/Oscillator.vue';
+import Envelope from './components/Envelope.vue';
+import Arpeggiator from './components/Arpeggiator.vue';
 
 export default {
   name: 'app',
   components: {
     "oscillator": Oscillator,
+    "envelope": Envelope,
     "arpeggiator": Arpeggiator,
   },
   data() {
@@ -63,17 +66,16 @@ export default {
     keyPress(e) {
       var note
       if((note = this.keyMap[e.key]) != null) {
-        EventBus.$emit('key-press', note)
-        // this.$refs.oscillator.startOsc(note)
-        // this.$refs.arpeggiator.arpeggiate(note)
+        // EventBus.$emit('key-press', note)
+        EventBus.$emit('arp-start', note)
       }
     },
     keyRelease(e) {
       var note
       if((note = this.keyMap[e.key]) != null) {
-        EventBus.$emit('key-release', note)
-        // this.$refs.oscillator.stopOsc(note)
-        // this.$refs.arpeggiator.stopArpeggiate(note)
+        // EventBus.$emit('key-release', note)
+        EventBus.$emit('arp-stop', note)
+        
       }
     }
   },
