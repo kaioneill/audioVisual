@@ -252,10 +252,10 @@ export default {
       EventBus.$emit('env-stop', {'note': note, 'osc': self.oscs[note]})
       
       delete self.pressedNotes[note]
-      self.oscs[note].stop(0)
+      self.oscs[note].stop(self.audioCtx.currentTime + .01)
     },
     volChange() {
-      this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .05)
+      this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .01)
     },
     pitchChange() {
 

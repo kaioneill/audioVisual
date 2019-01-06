@@ -28,15 +28,15 @@ export default {
       var note = obj['note']
       var osc = obj['osc']
 
-      if(self.envs[note] == null) {
-        self.envs[note] = self.audioCtx.createGain()
-        self.envs[note].gain.value = 0
-        
-        osc.connect(self.envs[note])
-        
-        self.envs[note].connect(self.audioCtx.destination)
-        self.envs[note].gain.linearRampToValueAtTime(.5, self.audioCtx.currentTime + .01)
-      }
+
+      self.envs[note] = self.audioCtx.createGain()
+      self.envs[note].gain.value = 0
+      
+      osc.connect(self.envs[note])
+      
+      self.envs[note].connect(self.audioCtx.destination)
+      self.envs[note].gain.linearRampToValueAtTime(.5, self.audioCtx.currentTime + .01)
+
       
 
     },
@@ -46,9 +46,9 @@ export default {
       var note = obj['note']
       var osc = obj['osc']
       
-      if(this.envs[note] != null) {
-        self.envs[note].gain.linearRampToValueAtTime(0, self.audioCtx.currentTime + .01)
-      }
+
+      self.envs[note].gain.linearRampToValueAtTime(0, self.audioCtx.currentTime + .01)
+
       
     },
   },
