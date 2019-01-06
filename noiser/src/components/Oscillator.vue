@@ -1,20 +1,18 @@
 <template lang="pug">
   #osc
-    
+
     .row.center
       .col-sm-3
         h5 osc1
-        //input#start(type="button" value="start" @click="startOsc()")
-        //input#stop(type="button" value="stop" @click="stopOsc()")
       .col-sm
         input(type="number" step="1" class="counter" id="osc1Pitch" v-model="this.oscPitchShift" @input="pitchChange()" data-toggle="tooltip" data-placement="top" title="osc pitch")
         input(type="number" step="1" class="counter" id="osc1Detune" v-model="this.oscDetune" @input="detuneChange()" data-toggle="tooltip" data-placement="top" title="osc detune")
     .row
       .col-sm
         vue-slider.osc-vol(v-model="oscVol" @input="volChange()" v-bind="this.options")
-      
-    
-    
+
+
+
 
     .row
       .col-sm
@@ -34,6 +32,8 @@
 </template>
 
 <script>
+
+import { EventBus } from '../event-bus.js'
 import vueSlider from 'vue-slider-component';
 
 export default {
@@ -223,20 +223,20 @@ export default {
   methods: {
     startOsc (note) {
       var self = this
-      
+
       if(self.pressedNotes[note] == null) {
         self.pressedNotes[note] = self.noteFreqs[note]
-        
+
         self.oscs[note] = self.audioCtx.createOscillator()
-        
+
         self.oscs[note].type = self.oscType
         if(self.randomWave == true) {
           self.oscs[note].setPeriodicWave(self.randomWaveShape)
         }
-        
+
         self.oscs[note].frequency.value = self.noteFreqs[note]
         self.oscs[note].detune.value = (100 * self.oscPitchShift) + self.oscDetune
-        
+
         self.oscs[note].connect(self.gainNode)
         self.oscs[note].start(0)
       }
@@ -251,10 +251,10 @@ export default {
       this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .05)
     },
     pitchChange() {
-      
+
     },
     detuneChange() {
-      
+
     },
     waveChange(waveShape) {
       if(waveShape == "randomWave") {
@@ -277,6 +277,15 @@ export default {
     this.gainNode = this.audioCtx.createGain();
     this.gainNode.connect(this.audioCtx.destination);
     this.gainNode.gain.value = 0;
+    
+    
+    EventBus.$on('key-press', note => {
+      this.startOsc(note);
+    });
+    EventBus.$on('key-release', note => {
+      this.stopOsc(note);
+    });
+    
   }
 }
 </script>
@@ -318,7 +327,7 @@ export default {
   border-width: 1px;
   border-color: #cccccc;
   margin: 2px;
-  
+
   font-family: 'Poppins', sans-serif;
   font-weight: 100;
   font-style: italic;

@@ -3,17 +3,22 @@
     .main-panel
       .main-name.col-sm-7#main-name {{this.mainName}}
       oscillator(ref="oscillator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
-  
+      //arpeggiator(ref="arpeggiator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+
+
 </template>
 
 <script>
 
+import { EventBus } from './event-bus.js'
 import Oscillator from './components/Oscillator.vue'
+import Arpeggiator from './components/Arpeggiator.vue'
 
 export default {
   name: 'app',
   components: {
-    "oscillator": Oscillator
+    "oscillator": Oscillator,
+    "arpeggiator": Arpeggiator,
   },
   data() {
     return {
@@ -24,7 +29,10 @@ export default {
       audioCtx: null,
       midiAccess: null,
       pressedKeys: {},
-      
+
+
+
+
       keyMap: {
         'a': 'C4',
         'w': 'C#4',
@@ -46,6 +54,7 @@ export default {
     init() {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
 
+
       this.audioCtx = new AudioContext();
       this.gainNode = this.audioCtx.createGain();
       this.gainNode.gain.value = 1;
@@ -54,13 +63,17 @@ export default {
     keyPress(e) {
       var note
       if((note = this.keyMap[e.key]) != null) {
-        this.$refs.oscillator.startOsc(note)
+        EventBus.$emit('key-press', note)
+        // this.$refs.oscillator.startOsc(note)
+        // this.$refs.arpeggiator.arpeggiate(note)
       }
     },
     keyRelease(e) {
       var note
       if((note = this.keyMap[e.key]) != null) {
-        this.$refs.oscillator.stopOsc(note)
+        EventBus.$emit('key-release', note)
+        // this.$refs.oscillator.stopOsc(note)
+        // this.$refs.arpeggiator.stopArpeggiate(note)
       }
     }
   },
