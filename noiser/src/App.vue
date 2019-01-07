@@ -71,6 +71,7 @@ export default {
     },
     keyPress(e) {
       var note
+      
       if((note = this.keyMap[e.key]) != null) {
         // EventBus.$emit('key-press', note)
         EventBus.$emit('arp-start', note)
@@ -89,11 +90,59 @@ export default {
     var self = this;
     self.init();
     window.addEventListener('keydown', function(e) {
+      console.log(e)
       self.keyPress(e);
     });
     window.addEventListener('keyup', function(e) {
       self.keyRelease(e);
     });
+    
+    
+    var WebMidi = require('webmidi')
+    WebMidi.enable(function (err) {
+      // console.log(WebMidi.inputs);
+      // console.log(WebMidi.outputs);
+
+
+
+      var options = WebMidi.inputs;
+
+      // for(var i = 0; i < options.length; i++) {
+      //   var opt = options[i];
+      //   var el = document.createElement("option");
+      //   el.textContent = opt._midiInput.name;
+      //   el.value = opt._midiInput.id;
+      //   midiSelect.appendChild(el);
+      // }
+
+      console.log(options)
+      
+      if(options.length > 0) {
+        var midiInput = WebMidi.getInputById(options[0].id);
+        // document.querySelector("#midiSelect").selectedIndex = 1;
+
+        midiInput.addListener('noteon', "all",
+          function (e) {
+            
+            // console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
+            // console.log(self.noteFreqs[e.note.name + e.note.octave]);
+            EventBus.$emit('arp-start', e.note.name + e.note.octave)
+          }
+        );
+        midiInput.addListener('noteoff', "all",
+          function (e) {
+            
+            // console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
+            // console.log(self.noteFreqs[e.note.name + e.note.octave]);
+            EventBus.$emit('arp-stop', e.note.name + e.note.octave)
+          }
+        );
+      }
+
+
+
+    });
+    
   }
 }
 </script>
