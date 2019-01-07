@@ -47,6 +47,7 @@ export default {
   ],
   data() {
     return {
+      gains: {},
       oscs: {},
       oscVol: 0,
       oscPitchShift: 0,
@@ -231,6 +232,7 @@ export default {
         self.pressedNotes[note] = self.noteFreqs[note]
 
         self.oscs[note] = self.audioCtx.createOscillator()
+        self.gains[note] = self.audioCtx.createGain()
 
         self.oscs[note].type = self.oscType
         if(self.randomWave == true) {
@@ -240,10 +242,11 @@ export default {
         self.oscs[note].frequency.value = self.noteFreqs[note]
         self.oscs[note].detune.value = (100 * self.oscPitchShift) + self.oscDetune
 
-        // self.oscs[note].connect(self.gainNode)
+        self.oscs[note].connect(self.gains[note])
+        self.gains[note].gain.value = self.oscVol
         self.oscs[note].start(0)
         
-        EventBus.$emit('env-start', {'note': note, 'osc': self.oscs[note]})
+        EventBus.$emit('env-start', {'note': note, 'osc': self.gains[note]})
       }
 
     },
@@ -252,10 +255,13 @@ export default {
       EventBus.$emit('env-stop', {'note': note, 'osc': self.oscs[note]})
       
       delete self.pressedNotes[note]
-      self.oscs[note].stop(self.audioCtx.currentTime + .01)
+      self.oscs[note].stop(self.audioCtx.currentTime + 2.01)
     },
     volChange() {
-      this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .01)
+      
+      Object.keys(this.gains).forEach(v => this.gains[v].gain.linearRampToValueAtTime(this.oscVol, this.audioCtx.currentTime + .01))
+      
+      // this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .01)
     },
     pitchChange() {
 
