@@ -4,10 +4,14 @@
       .pad-container
         h4 amp control
         #amp-pad.pad
+          h4.gray.no-select attack
+          h4.vertical-text.gray.no-select release
           #amp-drag.drag
       .pad-container
         h4 filter control
         #filter-pad.pad
+          h4.gray.no-select freq
+          h4.vertical-text.gray.no-select Q
           #filter-drag.drag
 
   
@@ -118,6 +122,9 @@ export default {
     var ampDragRect = ampDrag.getBoundingClientRect()
     var ampPad = document.querySelector("#amp-pad")
     var ampPadRect = ampPad.getBoundingClientRect()
+    
+    
+    
     // ampPad.onmousedown = function (e) {
     //   ampDrag.style.top = (e.clientY - parseInt((ampDragRect.top + ampDragRect.bottom)/2)) + 'px';
     //   ampDrag.style.left = (e.clientX - parseInt((ampDragRect.right + ampDragRect.left)/2)) + 'px';
@@ -148,6 +155,10 @@ export default {
     var filterDragRect = filterDrag.getBoundingClientRect()
     var filterPad = document.querySelector("#filter-pad")
     var filterPadRect = filterPad.getBoundingClientRect()
+    
+    
+    filterDrag.style.left = '80px'
+    
     // filterPad.onmousedown = function (e) {
     //   filterDrag.style.top = (e.clientY - parseInt((filterDragRect.top + filterDragRect.bottom)/2)) + 'px';
     //   filterDrag.style.left = (e.clientX - parseInt((filterDragRect.right + filterDragRect.left)/2)) + 'px';
@@ -215,7 +226,29 @@ h4 {
   font-style: italic;
   font-size: 14px;
 }
+
+.gray {
+  color: #777;
+}
+
+.vertical-text {
+  position: relative;
+  transform: rotate(270deg);
+  right: 42px;
+  top: 20px;
+}
   
+  
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
   
 
 
