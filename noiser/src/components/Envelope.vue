@@ -1,7 +1,9 @@
 <template lang="pug">
   #env
-    #env-pad
-      #drag
+    #amp-pad.pad
+      #amp-drag.drag
+    #filter-pad.pad
+      #filter-drag.drag
 
   
 
@@ -22,21 +24,37 @@ export default {
   data() {
     return {
         
-      padX: 0.0,
-      padY: 0.0,
+      ampPadX: 0.0,
+      ampPadY: 0.0,
       
-      envs: {},
+      filterPadX: 0.0,
+      filterPadY: 0.0,
+      
+      ampEnvs: {},
+      filterEnvs: {},
       
       decay: .5,
       sustain: 1,
     }
   },
   computed: {
-    attack: function() {
-      return parseFloat(this.padX / 100)
+    ampAttack: function() {
+      return parseFloat(this.ampPadX / 50)
     },
-    release: function() {
-      return parseFloat(this.padY / 100)
+    ampRelease: function() {
+      return parseFloat(this.ampPadY / 50)
+    },
+    filterAttack: function() {
+      return parseFloat(this.ampPadX / 50)
+    },
+    filterRelease: function() {
+      return parseFloat(this.ampPadY / 50)
+    },
+    filterFreq: function() {
+      return parseFloat(this.filterPadX * 200)
+    },
+    filterQ: function() {
+      return parseFloat(this.filterPadY / 2)
     },
   },
   methods: {
@@ -47,13 +65,20 @@ export default {
       var osc = obj['osc']
 
 
-      self.envs[note] = self.audioCtx.createGain()
-      self.envs[note].gain.value = 0
+      self.ampEnvs[note] = self.audioCtx.createGain()
+      self.ampEnvs[note].gain.value = 0
       
-      osc.connect(self.envs[note])
+      self.filterEnvs[note] = self.audioCtx.createBiquadFilter()
+      self.filterEnvs[note].frequency.value = 0
+      self.filterEnvs[note].Q.value = self.filterQ
       
-      self.envs[note].connect(self.audioCtx.destination)
-      self.envs[note].gain.linearRampToValueAtTime(.5, self.audioCtx.currentTime + self.attack)
+      osc.connect(self.ampEnvs[note])
+      self.ampEnvs[note].connect(self.filterEnvs[note])
+      
+      self.ampEnvs[note].gain.linearRampToValueAtTime(.5, self.audioCtx.currentTime + self.ampAttack)
+      self.filterEnvs[note].frequency.linearRampToValueAtTime(self.filterFreq, self.audioCtx.currentTime + self.filterAttack)
+      
+      self.filterEnvs[note].connect(self.audioCtx.destination)
 
       
 
@@ -65,8 +90,11 @@ export default {
       var note = obj['note']
       var osc = obj['osc']
       
-      self.envs[note].gain.cancelAndHoldAtTime(self.audioCtx.currentTime)
-      self.envs[note].gain.linearRampToValueAtTime(0, self.audioCtx.currentTime + self.release)
+      self.ampEnvs[note].gain.cancelAndHoldAtTime(self.audioCtx.currentTime)
+      self.ampEnvs[note].gain.linearRampToValueAtTime(0, self.audioCtx.currentTime + self.ampRelease)
+      
+      self.filterEnvs[note].frequency.cancelAndHoldAtTime(self.audioCtx.currentTime)
+      self.filterEnvs[note].frequency.linearRampToValueAtTime(0, self.audioCtx.currentTime + self.filterRelease)
 
       
     },
@@ -81,32 +109,64 @@ export default {
     
     var self = this
     
-    var drag = document.querySelector("#drag")
-    var dragRect = drag.getBoundingClientRect()
-    var envPad = document.querySelector("#env-pad")
-    var envPadRect = envPad.getBoundingClientRect()
-    drag.onmousedown = function (e) {
-      drag.style.top = (e.clientY - parseInt((dragRect.top + dragRect.bottom)/2)) + 'px';
-      drag.style.left = (e.clientX - parseInt((dragRect.right + dragRect.left)/2)) + 'px';
-      envPad.onmousemove = function (e) {
+    var ampDrag = document.querySelector("#amp-drag")
+    var ampDragRect = ampDrag.getBoundingClientRect()
+    var ampPad = document.querySelector("#amp-pad")
+    var ampPadRect = ampPad.getBoundingClientRect()
+    // ampPad.onmousedown = function (e) {
+    //   ampDrag.style.top = (e.clientY - parseInt((ampDragRect.top + ampDragRect.bottom)/2)) + 'px';
+    //   ampDrag.style.left = (e.clientX - parseInt((ampDragRect.right + ampDragRect.left)/2)) + 'px';
+    // }
+    ampDrag.onmousedown = function (e) {
+      ampDrag.style.top = (e.clientY - parseInt((ampDragRect.top + ampDragRect.bottom)/2)) + 'px';
+      ampDrag.style.left = (e.clientX - parseInt((ampDragRect.right + ampDragRect.left)/2)) + 'px';
+      ampPad.onmousemove = function (e) {
         e.preventDefault();
-        var centerY = parseInt((dragRect.top + dragRect.bottom)/2)
-        var centerX = parseInt((dragRect.right + dragRect.left)/2)
-        if(e.clientY > envPadRect.top + 10 && e.clientY < envPadRect.bottom - 10) {
-          drag.style.top = (e.clientY - centerY) + 'px';
+        var centerY = parseInt((ampDragRect.top + ampDragRect.bottom)/2)
+        var centerX = parseInt((ampDragRect.right + ampDragRect.left)/2)
+        if(e.clientY > ampPadRect.top + 10 && e.clientY < ampPadRect.bottom - 10) {
+          ampDrag.style.top = (e.clientY - centerY) + 'px';
         }
-        if(e.clientX > envPadRect.left + 10 && e.clientX < envPadRect.right - 10) {
-          drag.style.left = (e.clientX - centerX) + 'px';
+        if(e.clientX > ampPadRect.left + 10 && e.clientX < ampPadRect.right - 10) {
+          ampDrag.style.left = (e.clientX - centerX) + 'px';
         }
         document.onmouseup = function () {
-          envPad.onmousemove = null
+          ampPad.onmousemove = null
         }
-        self.padX = parseInt(drag.style.left) + 10
-        self.padY = parseInt(drag.style.top) + 10
-        
-        
+        self.ampPadX = parseInt(ampDrag.style.left) + 10
+        self.ampPadY = parseInt(ampDrag.style.top) + 10
       }
     }
+    
+    
+    var filterDrag = document.querySelector("#filter-drag")
+    var filterDragRect = filterDrag.getBoundingClientRect()
+    var filterPad = document.querySelector("#filter-pad")
+    var filterPadRect = filterPad.getBoundingClientRect()
+    // filterPad.onmousedown = function (e) {
+    //   filterDrag.style.top = (e.clientY - parseInt((filterDragRect.top + filterDragRect.bottom)/2)) + 'px';
+    //   filterDrag.style.left = (e.clientX - parseInt((filterDragRect.right + filterDragRect.left)/2)) + 'px';
+    // }
+    filterDrag.onmousedown = function (e) {
+      filterDrag.style.top = (e.clientY - parseInt((filterDragRect.top + filterDragRect.bottom)/2)) + 'px';
+      filterDrag.style.left = (e.clientX - parseInt((filterDragRect.right + filterDragRect.left)/2)) + 'px';
+      filterPad.onmousemove = function (e) {
+        e.preventDefault();
+        var centerY = parseInt((filterDragRect.top + filterDragRect.bottom)/2)
+        var centerX = parseInt((filterDragRect.right + filterDragRect.left)/2)
+        if(e.clientY > filterPadRect.top + 10 && e.clientY < filterPadRect.bottom - 10) {
+          filterDrag.style.top = (e.clientY - centerY) + 'px';
+        }
+        if(e.clientX > filterPadRect.left + 10 && e.clientX < filterPadRect.right - 10) {
+          filterDrag.style.left = (e.clientX - centerX) + 'px';
+        }
+        document.onmouseup = function () {
+          filterPad.onmousemove = null
+        }
+        self.filterPadX = parseInt(filterDrag.style.left) + 10
+        self.filterPadY = parseInt(filterDrag.style.top) + 10
+      }
+    }  
     
     
   }
@@ -116,14 +176,14 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  #env-pad {
+  .pad {
     background-color: #fff;
-    height: 200px;
-    width: 200px;
+    height: 100px;
+    width: 100px;
     border-radius: 10px;
   }
   
-  #drag {
+  .drag {
     position: relative;
     /* top: 90px; */
     /* left: 90px; */
@@ -132,6 +192,8 @@ export default {
     width: 20px;
     border-radius: 10px;
   }
+  
+  
 
 
 </style>

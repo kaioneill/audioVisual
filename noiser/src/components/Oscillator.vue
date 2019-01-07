@@ -49,7 +49,7 @@ export default {
     return {
       gains: {},
       oscs: {},
-      oscVol: 0,
+      oscVol: 0.50,
       oscPitchShift: 0,
       oscDetune: 0,
       oscType: 'sine',
@@ -62,7 +62,6 @@ export default {
         min: 0,
         max: 1.0,
         interval: 0.01,
-        value: 0.50,
         tooltipStyle: {
           "backgroundColor": "#ffbf00",
           "borderColor": "#ffbf00",
