@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       
-      color: 0,
+      color: [204,255,255],
       
       gains: {},
       oscs: {},
@@ -229,9 +229,16 @@ export default {
     startOsc (note) {
       var self = this
       
-      self.color += self.noteFreqs[note]
+      
 
       if(self.pressedNotes[note] == null) {
+        
+        
+        self.color[0] = Math.abs(parseInt(Math.sin(self.noteFreqs[note]) * 255))
+        self.color[1] = Math.abs(parseInt(Math.cos(self.noteFreqs[note]) * 255))
+        self.color[2] = Math.abs(parseInt(Math.tan(self.noteFreqs[note]) * 255))
+        
+        
         self.pressedNotes[note] = self.noteFreqs[note]
 
         self.oscs[note] = self.audioCtx.createOscillator()
@@ -256,6 +263,9 @@ export default {
     stopOsc (note) {
       var self = this
       EventBus.$emit('env-stop', {'note': note, 'osc': self.oscs[note]})
+      
+      self.color = [204,255,255]
+      
       
       delete self.pressedNotes[note]
       self.oscs[note].stop(self.audioCtx.currentTime + 2.1)
@@ -300,13 +310,20 @@ export default {
     
     EventBus.$on('arp-start', note => {
       this.startOsc(note);
-      var newColor = 'rgb(' + parseInt(Math.cos(self.color) * 255) + ',' + parseInt(Math.sin(self.color) * 255) + ',' + parseInt(Math.tan(self.color) * 255) + ')'
+      console.log(self.color)
+      // var newColor = 'rgb(' + parseInt(Math.cos(self.color) * 255) + ',' + parseInt(Math.sin(self.color) * 255) + ',' + parseInt(Math.tan(self.color) * 255) + ')'
+      
+      var newColor = 'rgb(' + self.color[0] + ',' + self.color[1] + ',' + self.color[2] + ')'
       // document.querySelector('#background').style.backgroundColor = newColor
       TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
     });
     EventBus.$on('arp-stop', note => {
       if(this.oscs[note] != null) {
         this.stopOsc(note);
+        
+        var newColor = 'rgb(' + self.color[0] + ',' + self.color[1] + ',' + self.color[2] + ')'
+        
+        TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
       }
     });
     

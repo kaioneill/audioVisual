@@ -90,7 +90,6 @@ export default {
     var self = this;
     self.init();
     window.addEventListener('keydown', function(e) {
-      console.log(e)
       self.keyPress(e);
     });
     window.addEventListener('keyup', function(e) {
