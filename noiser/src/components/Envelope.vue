@@ -100,10 +100,10 @@ export default {
       var osc = obj['osc']
       
       self.ampEnvs[note].gain.cancelAndHoldAtTime(self.audioCtx.currentTime)
-      self.ampEnvs[note].gain.linearRampToValueAtTime(0, self.audioCtx.currentTime + self.ampRelease)
+      self.ampEnvs[note].gain.linearRampToValueAtTime(0, self.audioCtx.currentTime + self.ampRelease + .01)
       
       self.filterEnvs[note].frequency.cancelAndHoldAtTime(self.audioCtx.currentTime)
-      self.filterEnvs[note].frequency.linearRampToValueAtTime(0, self.audioCtx.currentTime + self.filterRelease)
+      self.filterEnvs[note].frequency.linearRampToValueAtTime(0, self.audioCtx.currentTime + self.filterRelease + .01)
 
       
     },
@@ -181,6 +181,14 @@ export default {
         }
         self.filterPadX = parseInt(filterDrag.style.left) + 10
         self.filterPadY = parseInt(filterDrag.style.top) + 10
+        
+        if(self.filterEnvs) {
+          Object.keys(self.filterEnvs).forEach(v => {
+            // self.filterEnvs[v].frequency.cancelAndHoldAtTime(self.audioCtx.currentTime)
+            self.filterEnvs[v].frequency.linearRampToValueAtTime(self.filterFreq, self.audioCtx.currentTime + .05)
+            self.filterEnvs[v].Q.linearRampToValueAtTime(self.filterQ, self.audioCtx.currentTime + .05)
+          })
+        }
       }
     }  
     

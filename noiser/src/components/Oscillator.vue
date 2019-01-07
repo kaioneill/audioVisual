@@ -6,8 +6,8 @@
       .col-sm-3
         h5 osc1
       .col-sm
-        input.counter(type="number" step="1" v-model="oscPitchShift" @input="pitchChange()" data-toggle="tooltip" data-placement="top" title="osc pitch")
-        input.counter(type="number" step="1" v-model="oscDetune" @input="detuneChange()" data-toggle="tooltip" data-placement="top" title="osc detune")
+        input.counter(type="number" step="1" v-model="oscPitchShift" data-toggle="tooltip" data-placement="top" title="osc pitch")
+        input.counter(type="number" step="1" v-model="oscDetune" data-toggle="tooltip" data-placement="top" title="osc detune")
     .row
       .col-sm
         vue-slider.osc-vol(v-model="oscVol" @input="volChange()" v-bind="this.options")
@@ -52,6 +52,7 @@ export default {
       color: [204,255,255],
       
       gains: {},
+      compressors: {},
       oscs: {},
       oscVol: 0.50,
       oscPitchShift: 0,
@@ -243,6 +244,14 @@ export default {
 
         self.oscs[note] = self.audioCtx.createOscillator()
         self.gains[note] = self.audioCtx.createGain()
+        
+        
+        self.compressors[note] = self.audioCtx.createDynamicsCompressor();
+        self.compressors[note].threshold.setValueAtTime(-50, self.audioCtx.currentTime);
+        self.compressors[note].knee.setValueAtTime(40, self.audioCtx.currentTime);
+        self.compressors[note].ratio.setValueAtTime(12, self.audioCtx.currentTime);
+        self.compressors[note].attack.setValueAtTime(0, self.audioCtx.currentTime);
+        self.compressors[note].release.setValueAtTime(0.25, self.audioCtx.currentTime);
 
         self.oscs[note].type = self.oscType
         if(self.randomWave == true) {
@@ -252,7 +261,8 @@ export default {
         self.oscs[note].frequency.value = self.noteFreqs[note]
         self.oscs[note].detune.value = (100 * self.oscPitchShift) + self.oscDetune
 
-        self.oscs[note].connect(self.gains[note])
+        self.oscs[note].connect(self.compressors[note])
+        self.compressors[note].connect(self.gains[note])
         self.gains[note].gain.value = self.oscVol
         self.oscs[note].start(0)
         
@@ -272,14 +282,9 @@ export default {
     },
     volChange() {
       
-      Object.keys(this.gains).forEach(v => this.gains[v].gain.linearRampToValueAtTime(this.oscVol, this.audioCtx.currentTime + .01))
+      Object.keys(this.gains).forEach(v => this.gains[v].gain.linearRampToValueAtTime(this.oscVol, this.audioCtx.currentTime + .05))
       
       // this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .01)
-    },
-    pitchChange() {
-    },
-    detuneChange() {
-      
     },
     waveChange(waveShape) {
       if(waveShape == "randomWave") {
