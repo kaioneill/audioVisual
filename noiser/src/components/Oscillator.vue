@@ -235,9 +235,9 @@ export default {
       if(self.pressedNotes[note] == null) {
         
         
-        self.color[0] = Math.abs(parseInt(Math.sin(self.noteFreqs[note]) * 255))
-        self.color[1] = Math.abs(parseInt(Math.cos(self.noteFreqs[note]) * 255))
-        self.color[2] = Math.abs(parseInt(Math.tan(self.noteFreqs[note]) * 255))
+        self.color[0] = Math.abs(parseInt(Math.sin(self.noteFreqs[note] - 990) * 255))
+        self.color[1] = Math.abs(parseInt(Math.cos(self.noteFreqs[note] - 2230) * 255))
+        self.color[2] = Math.abs(parseInt(Math.tan(self.noteFreqs[note] - 672) * 255))
         
         
         self.pressedNotes[note] = self.noteFreqs[note]
@@ -315,7 +315,6 @@ export default {
     
     EventBus.$on('arp-start', note => {
       this.startOsc(note);
-      console.log(self.color)
       // var newColor = 'rgb(' + parseInt(Math.cos(self.color) * 255) + ',' + parseInt(Math.sin(self.color) * 255) + ',' + parseInt(Math.tan(self.color) * 255) + ')'
       
       var newColor = 'rgb(' + self.color[0] + ',' + self.color[1] + ',' + self.color[2] + ')'
