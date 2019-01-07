@@ -1,4 +1,5 @@
 <template lang="pug">
+
   #osc
 
     .row.center
@@ -47,6 +48,9 @@ export default {
   ],
   data() {
     return {
+      
+      color: 0,
+      
       gains: {},
       oscs: {},
       oscVol: 0.50,
@@ -225,7 +229,7 @@ export default {
     startOsc (note) {
       var self = this
       
-      
+      self.color += self.noteFreqs[note]
 
       if(self.pressedNotes[note] == null) {
         self.pressedNotes[note] = self.noteFreqs[note]
@@ -254,7 +258,7 @@ export default {
       EventBus.$emit('env-stop', {'note': note, 'osc': self.oscs[note]})
       
       delete self.pressedNotes[note]
-      self.oscs[note].stop(self.audioCtx.currentTime + 2.01)
+      self.oscs[note].stop(self.audioCtx.currentTime + 2.1)
     },
     volChange() {
       
@@ -285,6 +289,10 @@ export default {
     }
   },
   mounted() {
+    
+    var self = this
+    
+    
     this.gainNode = this.audioCtx.createGain();
     // this.gainNode.connect(this.audioCtx.destination);
     this.gainNode.gain.value = 0;
@@ -292,6 +300,9 @@ export default {
     
     EventBus.$on('arp-start', note => {
       this.startOsc(note);
+      var newColor = 'rgb(' + parseInt(Math.cos(self.color) * 255) + ',' + parseInt(Math.sin(self.color) * 255) + ',' + parseInt(Math.tan(self.color) * 255) + ')'
+      // document.querySelector('#background').style.backgroundColor = newColor
+      TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
     });
     EventBus.$on('arp-stop', note => {
       if(this.oscs[note] != null) {
@@ -384,7 +395,8 @@ input[type="radio"]+label{
   margin:  0 10px 0 10px;
 }
 
-.osc-vol {
+.color-change {
+  color: rgb(0,0,0);
 }
 
 </style>
