@@ -1,10 +1,15 @@
 <template lang="pug">
   #app
     .main-panel
-      .main-name.col-sm-7#main-name {{this.mainName}}
-      oscillator(ref="oscillator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
-      envelope(ref="envelope" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
-      arpeggiator(ref="arpeggiator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+      .main-name.row
+        .col-center#main-name {{this.mainName}}
+      .row
+        .col-sm-2.margin
+          oscillator(ref="oscillator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+          arpeggiator(ref="arpeggiator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+        .pads.col.margin
+          envelope(ref="envelope" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+    
 
 
 </template>
@@ -100,8 +105,10 @@ export default {
 
 }
 
+
+
 .main-name {
-  padding: 0px 10px 0px 0px;
+  /* padding: 0px 10px 0px 0px; */
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-style: italic;
@@ -109,10 +116,18 @@ export default {
 }
 
 .main-panel {
-
-  margin: auto;
-  width: 500px;
+  margin: 0 auto;
+  width: 1000px;
   position: relative;
+}
+
+.margin {
+  margin: 10px;
+}
+
+.col-center {
+  float: none;
+  margin: 0 auto;
 }
 
 

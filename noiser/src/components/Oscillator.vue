@@ -5,8 +5,8 @@
       .col-sm-3
         h5 osc1
       .col-sm
-        input(type="number" step="1" class="counter" id="osc1Pitch" v-model="this.oscPitchShift" @input="pitchChange()" data-toggle="tooltip" data-placement="top" title="osc pitch")
-        input(type="number" step="1" class="counter" id="osc1Detune" v-model="this.oscDetune" @input="detuneChange()" data-toggle="tooltip" data-placement="top" title="osc detune")
+        input.counter(type="number" step="1" v-model="oscPitchShift" @input="pitchChange()" data-toggle="tooltip" data-placement="top" title="osc pitch")
+        input.counter(type="number" step="1" v-model="oscDetune" @input="detuneChange()" data-toggle="tooltip" data-placement="top" title="osc detune")
     .row
       .col-sm
         vue-slider.osc-vol(v-model="oscVol" @input="volChange()" v-bind="this.options")
@@ -263,10 +263,9 @@ export default {
       // this.gainNode.gain.linearRampToValueAtTime(parseFloat(this.oscVol), this.audioCtx.currentTime + .01)
     },
     pitchChange() {
-
     },
     detuneChange() {
-
+      
     },
     waveChange(waveShape) {
       if(waveShape == "randomWave") {

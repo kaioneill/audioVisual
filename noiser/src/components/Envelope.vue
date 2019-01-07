@@ -1,9 +1,14 @@
 <template lang="pug">
   #env
-    #amp-pad.pad
-      #amp-drag.drag
-    #filter-pad.pad
-      #filter-drag.drag
+    .row
+      .pad-container
+        h4 amp control
+        #amp-pad.pad
+          #amp-drag.drag
+      .pad-container
+        h4 filter control
+        #filter-pad.pad
+          #filter-drag.drag
 
   
 
@@ -176,22 +181,40 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  .pad {
-    background-color: #fff;
-    height: 100px;
-    width: 100px;
-    border-radius: 10px;
-  }
-  
-  .drag {
-    position: relative;
-    /* top: 90px; */
-    /* left: 90px; */
-    background-color: #000;
-    height: 20px;
-    width: 20px;
-    border-radius: 10px;
-  }
+#env {
+  width: 100%;
+}
+
+.pad-container {
+  text-align: center;
+  width: 120px;
+  padding: 0 10px 0 10px;
+}
+
+.pad {
+  background-color: #fff;
+  height: 100px;
+  width: 100px;
+  border-radius: 10px;
+  float: left;
+}
+
+.drag {
+  position: relative;
+  /* top: 90px; */
+  /* left: 90px; */
+  background-color: #000;
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
+}
+
+h4 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 100;
+  font-style: italic;
+  font-size: 14px;
+}
   
   
 
