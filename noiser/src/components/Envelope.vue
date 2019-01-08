@@ -48,13 +48,13 @@ export default {
   },
   computed: {
     ampAttack: function() {
-      return parseFloat(this.ampPadX / 50)
+      return parseFloat(this.ampPadX / 100)
     },
     ampRelease: function() {
       return parseFloat(this.ampPadY / 50)
     },
     filterAttack: function() {
-      return parseFloat(this.ampPadX / 50)
+      return parseFloat(this.ampPadX / 100)
     },
     filterRelease: function() {
       return parseFloat(this.ampPadY / 50)
@@ -109,20 +109,28 @@ export default {
     },
   },
   mounted() {
+    var self = this
+    
+  
     EventBus.$on('env-start', obj => {
-      this.startEnv(obj);
+      self.startEnv(obj);
     });
     EventBus.$on('env-stop', obj => {
-      this.stopEnv(obj);
+      self.stopEnv(obj);
     });
     
-    var self = this
+    
     
     var ampDrag = document.querySelector("#amp-drag")
     var ampDragRect = ampDrag.getBoundingClientRect()
     var ampPad = document.querySelector("#amp-pad")
     var ampPadRect = ampPad.getBoundingClientRect()
     
+    ampDrag.style.left = 0 + ampDrag.style.marginLeft
+    ampDrag.style.top = 0 + ampDrag.style.marginTop
+    
+    self.ampPadX = parseInt(ampDrag.style.left) + 10
+    self.ampPadY = parseInt(ampDrag.style.top) + 10
     
     
     // ampPad.onmousedown = function (e) {
@@ -158,6 +166,13 @@ export default {
     
     
     filterDrag.style.left = '80px'
+    filterDrag.style.top = 0
+    
+    self.filterPadX = parseInt(80) + 10
+    self.filterPadY = parseInt(filterDrag.style.top) + 10
+    
+    
+    
     
     // filterPad.onmousedown = function (e) {
     //   filterDrag.style.top = (e.clientY - parseInt((filterDragRect.top + filterDragRect.bottom)/2)) + 'px';
