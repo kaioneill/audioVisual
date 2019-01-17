@@ -16,6 +16,9 @@
             envelope(ref="envelope" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
         //.row.margin
           audioBuffer(ref="audioBuffer" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+        
+      .row
+        blobStuff(ref="bloblStuff" v-if="this.contentLoaded")
   
 
 
@@ -27,6 +30,7 @@ import { EventBus } from './event-bus.js';
 import Oscillator from './components/Oscillator.vue';
 import Envelope from './components/Envelope.vue';
 import Arpeggiator from './components/Arpeggiator.vue';
+import BlobStuff from './components/BlobStuff.vue'
 // import AudioBuffer from './components/AudioBuffer.vue';
 
 
@@ -37,6 +41,7 @@ export default {
     "envelope": Envelope,
     "arpeggiator": Arpeggiator,
     // "audioBuffer": AudioBuffer,
+    "blobStuff": BlobStuff,
   },
   data() {
     return {
