@@ -176,6 +176,7 @@ export default {
   width: 100%;
   height: 100%;
   /* background-color: #ccffff; */
+  text-align: center;
 }
 
 
@@ -189,7 +190,9 @@ export default {
 }
 
 .main-panel {
-  width: 1000px;
+  left: 29%;
+  /* right: auto; */
+  /* width: 1000px; */
   position: relative;
 }
 
@@ -203,7 +206,7 @@ export default {
 }
 
 #midi-select{
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 35px;
   height: 20px;
   font-family: 'Poppins', sans-serif;
