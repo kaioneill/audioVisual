@@ -45,7 +45,7 @@ export default {
       globalVolume: 0.05,
       gainNode: null,
       audioCtx: null,
-      midiAccess: null,
+      webMidi: null,
       pressedKeys: {},
 
 
@@ -96,12 +96,12 @@ export default {
       }
     },
     midiSourceChange() {
-      var midiSelect = document.getElementById("midiSelect")
+      var midiSelect = document.getElementById("midi-select")
 
       var midiInputId = midiSelect.value
 
-      var midiInput = app.WebMidi.getInputById(midiInputId)
-      app.midiInput = midiInput;
+      var midiInput = this.webMidi.getInputById(midiInputId)
+      this.midiInput = midiInput;
 
       // console.log(midiInputId)
 
@@ -120,7 +120,8 @@ export default {
     
     
     var WebMidi = require('webmidi')
-    WebMidi.enable(function (err) {
+    self.webMidi = WebMidi
+    self.webMidi.enable(function (err) {
       // console.log(WebMidi.inputs);
       // console.log(WebMidi.outputs);
 
@@ -140,7 +141,7 @@ export default {
       
       if(options.length > 0) {
         var midiInput = WebMidi.getInputById(options[0].id);
-        // document.querySelector("#midiSelect").selectedIndex = 1;
+        document.querySelector("#midiSelect").selectedIndex = 1;
 
         midiInput.addListener('noteon', "all",
           function (e) {
