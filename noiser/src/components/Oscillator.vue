@@ -314,6 +314,7 @@ export default {
     
     
     EventBus.$on('arp-start', note => {
+      EventBus.$emit('freq-on', self.noteFreqs[note])
       this.startOsc(note);
       // var newColor = 'rgb(' + parseInt(Math.cos(self.color) * 255) + ',' + parseInt(Math.sin(self.color) * 255) + ',' + parseInt(Math.tan(self.color) * 255) + ')'
       
@@ -322,6 +323,7 @@ export default {
       TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
     });
     EventBus.$on('arp-stop', note => {
+      EventBus.$emit('freq-off', self.noteFreqs[note])
       if(this.oscs[note] != null) {
         this.stopOsc(note);
         
