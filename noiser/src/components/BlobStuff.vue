@@ -32,7 +32,7 @@ export default {
       this.scene = new THREE.Scene();
       this.camera = new THREE.PerspectiveCamera( 40, container.offsetHeight / container.offsetWidth, 0.01, 1000 );
    
-      var radius = 40;
+      var radius = 30;
       var segments = 10;
       var rings = 10;
 
@@ -52,11 +52,15 @@ export default {
       // this.blob.add( wireframe );
       
       
-      var light = new THREE.PointLight( 0x777777, 1, 50 );
-      light.position.set( 500, 500, 500 );
+      var light = new THREE.SpotLight( 0x7777BB, 2, 50 );
+      light.position.set( 500, 1500, 500 );
       this.scene.add( light );
       
-      var ambientLight = new THREE.AmbientLight( 0xffffff ); // soft white light
+      // var light1 = new THREE.SpotLight( 0x7777AA, 2, 50 );
+      // light1.position.set( -2000, -500, -500 );
+      // this.scene.add( light1 );
+      
+      var ambientLight = new THREE.AmbientLight( 0xBBBBBB ); // soft white light
       this.scene.add( ambientLight )
 
       this.camera.position.z = 150;
@@ -88,13 +92,14 @@ export default {
     var animate = function () {
 			requestAnimationFrame( animate );
     
-    
+  
     
 			self.blob.geometry.vertices.forEach(function(element) {
-        element.x += Math.sin(element.y)*10;
-        element.y += Math.cos(element.x)*10;
-        
+        element.x += Math.sin(self.morphX)/10;
+        element.y += Math.cos(self.morphX)/10;
+        element.z += Math.tan(self.morphX)/10;
       });
+      self.blob.geometry.verticesNeedUpdate = true;
 			// self.blob.rotation.y += 0.01;
       // self.blob.rotation.x += 0.01;
     
