@@ -22,7 +22,8 @@ export default {
       blob: null,
       scene: null,
       camera: null,
-      morphX: 0,
+      morph: 0,
+      oldGeo: null,
       
     }
   },
@@ -45,6 +46,7 @@ export default {
 
       this.blob = new THREE.Mesh(geometry, material);
       this.scene.add(this.blob);
+      
       
       // var geo = new THREE.EdgesGeometry( this.blob.geometry ); // or WireframeGeometry
       // var mat = new THREE.LineBasicMaterial( { color: 0xBBBBBB, linewidth: 1 } );
@@ -79,26 +81,36 @@ export default {
     EventBus.$on('freq-on', freq => {
       console.log(freq)
       self.blob.geometry.vertices.forEach(function(element) {
-        self.morphX = freq;
+        self.morph = freq;
       }); 
     });
     EventBus.$on('freq-off', freq => {
+      self.morph = 0;
     });
     
     this.init(THREE);
     
     var self = this;
     
+    this.oldGeo = this.blob.geometry
+    
     var animate = function () {
 			requestAnimationFrame( animate );
     
   
-    
-			self.blob.geometry.vertices.forEach(function(element) {
-        element.x += Math.sin(self.morphX)/10;
-        element.y += Math.cos(self.morphX)/10;
-        element.z += Math.tan(self.morphX)/10;
-      });
+      if(self.morph != 0) {
+  			self.blob.geometry.vertices.forEach(function(vector) {
+          vector.x += Math.sin(self.morph/(vector.z/100));
+          vector.y += Math.sin(self.morph/(vector.x/100));
+          vector.z += Math.sin(self.morph/(vector.y/100));
+          // if(vector.x >= 50) vector.x -= 100;
+          // if(vector.y >= 50) vector.y -= 100;
+          // if(vector.z >= 50) vector.z -= 100;
+        });
+      } else {
+        self.blob.geometry = self.oldGeo
+      }
+      
       self.blob.geometry.verticesNeedUpdate = true;
 			// self.blob.rotation.y += 0.01;
       // self.blob.rotation.x += 0.01;
