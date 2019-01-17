@@ -1,15 +1,21 @@
 <template lang="pug">
   #app
     .main-panel.col-center
-      .main-name.row
-        #main-name {{this.mainName}}
+      .row
+        #main-name.title {{this.mainName}}
+        .col-sm-2#midi-select
+          select(id="midiSelect" @change="midiSourceChange")
+            option(value="" disabled selected) no midi devices...
       .col-center
         .row
           .col-sm-2.margin
             oscillator(ref="oscillator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
             arpeggiator(ref="arpeggiator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+            
           .pads.col-sm-3.margin
             envelope(ref="envelope" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+        //.row.margin
+          audioBuffer(ref="audioBuffer" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
   
 
 
@@ -21,6 +27,8 @@ import { EventBus } from './event-bus.js';
 import Oscillator from './components/Oscillator.vue';
 import Envelope from './components/Envelope.vue';
 import Arpeggiator from './components/Arpeggiator.vue';
+// import AudioBuffer from './components/AudioBuffer.vue';
+
 
 export default {
   name: 'app',
@@ -28,6 +36,7 @@ export default {
     "oscillator": Oscillator,
     "envelope": Envelope,
     "arpeggiator": Arpeggiator,
+    // "audioBuffer": AudioBuffer,
   },
   data() {
     return {
@@ -85,6 +94,18 @@ export default {
         EventBus.$emit('arp-stop', note)
         
       }
+    },
+    midiSourceChange() {
+      var midiSelect = document.getElementById("midiSelect")
+
+      var midiInputId = midiSelect.value
+
+      var midiInput = app.WebMidi.getInputById(midiInputId)
+      app.midiInput = midiInput;
+
+      // console.log(midiInputId)
+
+    
     }
   },
   mounted() {
@@ -107,13 +128,13 @@ export default {
 
       var options = WebMidi.inputs;
 
-      // for(var i = 0; i < options.length; i++) {
-      //   var opt = options[i];
-      //   var el = document.createElement("option");
-      //   el.textContent = opt._midiInput.name;
-      //   el.value = opt._midiInput.id;
-      //   midiSelect.appendChild(el);
-      // }
+      for(var i = 0; i < options.length; i++) {
+        var opt = options[i];
+        var el = document.createElement("option");
+        el.textContent = opt._midiInput.name;
+        el.value = opt._midiInput.id;
+        midiSelect.appendChild(el);
+      }
 
       console.log(options)
       
@@ -159,7 +180,7 @@ export default {
 
 
 
-.main-name {
+.title {
   /* padding: 0px 10px 0px 0px; */
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
@@ -179,6 +200,16 @@ export default {
 .col-center {
   float: none;
   margin: 0 auto;
+}
+
+#midi-select{
+  margin-left: 20px;
+  margin-top: 35px;
+  height: 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 100;
+  font-style: italic;
+  font-size: 14px;
 }
 
 

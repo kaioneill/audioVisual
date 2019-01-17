@@ -201,7 +201,7 @@ export default {
         var oldColor = window.getComputedStyle(document.querySelector('#background')).getPropertyValue('background-color')
 
         var color = oldColor.substring(oldColor.indexOf('(')+1, oldColor.length-1).split(',').map(Number)
-        console.log(color)
+        // console.log(color)
           
         color[0] = parseInt(Math.cos(self.filterFreq/(color[0]*100) + self.filterQ/(color[0]*10)) * 255)
         color[1] = parseInt(Math.sin(self.filterFreq/(color[1]*100) + self.filterQ/(color[1]*10)) * 255)
