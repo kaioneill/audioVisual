@@ -259,7 +259,7 @@ export default {
         }
 
         self.oscs[note].frequency.value = self.noteFreqs[note]
-        self.oscs[note].detune.value = (100 * self.oscPitchShift) + self.oscDetune
+        self.oscs[note].detune.value = (100 * parseInt(self.oscPitchShift)) + parseInt(self.oscDetune)
 
         self.oscs[note].connect(self.compressors[note])
         self.compressors[note].connect(self.gains[note])
