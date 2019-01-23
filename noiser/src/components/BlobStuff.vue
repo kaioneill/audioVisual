@@ -64,6 +64,7 @@ export default {
       self.sphere = new self.Three.Mesh(self.sphereGeometry, self.material);
       self.scene.add(self.sphere);
 
+      self.old = self.sphere.geometry
 
     },
     update() {
@@ -80,9 +81,13 @@ export default {
       
       // change 'k' value for more spikes
       var k = 1;
-      for (var i = 0; i < self.sphere.geometry.vertices.length; i++) {
-          var p = self.sphere.geometry.vertices[i];
-          p.normalize().multiplyScalar(1 + 0.3 * this.noise.noise.perlin3(p.x * k + time, p.y * k, p.z * k));
+      if(Object.keys(self.pressedNotes).length) {
+        for (var i = 0; i < self.sphere.geometry.vertices.length; i++) {
+            var p = self.sphere.geometry.vertices[i];
+            p.normalize().multiplyScalar(1 + 0.3 * this.noise.noise.perlin3(p.x * Math.sin(self.morph)*3 + 0, p.y * k, p.z * k));
+        }
+      } else {
+        self.sphere.geometry = self.old
       }
       self.sphere.geometry.computeVertexNormals();
       self.sphere.geometry.normalsNeedUpdate = true;
@@ -97,10 +102,12 @@ export default {
     
     
     EventBus.$on('freq-on', freq => {
-      requestAnimationFrame(animate);
+      self.pressedNotes[freq] = true
+      // requestAnimationFrame(animate);
       this.morph += freq
     });
     EventBus.$on('freq-off', freq => {
+      delete self.pressedNotes[freq]
       this.morph -= freq
     });
     
@@ -117,7 +124,7 @@ export default {
       self.update();
       /* render scene and camera */
       self.renderer.render(self.scene,self.camera);
-      
+      requestAnimationFrame(animate);
     
     }
     
