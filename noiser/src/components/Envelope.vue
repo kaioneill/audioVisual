@@ -193,23 +193,21 @@ export default {
         }
         document.onmouseup = function () {
           filterPad.onmousemove = null
-          TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: 'rgb(rgb(204, 255, 255)'});
+          // TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: 'rgb(rgb(204, 255, 255)'});
         }
         self.filterPadX = parseInt(filterDrag.style.left) + 10
         self.filterPadY = parseInt(filterDrag.style.top) + 10
         
-        var oldColor = window.getComputedStyle(document.querySelector('#background')).getPropertyValue('background-color')
-
-        var color = oldColor.substring(oldColor.indexOf('(')+1, oldColor.length-1).split(',').map(Number)
-        // console.log(color)
-          
-        color[0] = parseInt(Math.cos(self.filterFreq/(color[0]*100) + self.filterQ/(color[0]*10)) * 255)
-        color[1] = parseInt(Math.sin(self.filterFreq/(color[1]*100) + self.filterQ/(color[1]*10)) * 255)
-        color[2] = parseInt(Math.tan(self.filterFreq/(color[2]*100) + self.filterQ/(color[2]*10)) * 255)
-        
-        var newColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
-        // document.querySelector('#background').style.backgroundColor = newColor
-        TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
+        // var oldColor = window.getComputedStyle(document.querySelector('#background')).getPropertyValue('background-color')
+        // 
+        // var color = oldColor.substring(oldColor.indexOf('(')+1, oldColor.length-1).split(',').map(Number)
+        // 
+        // color[0] = parseInt(Math.cos(self.filterFreq/(color[0]*100) + self.filterQ/(color[0]*10)) * 255)
+        // color[1] = parseInt(Math.sin(self.filterFreq/(color[1]*100) + self.filterQ/(color[1]*10)) * 255)
+        // color[2] = parseInt(Math.tan(self.filterFreq/(color[2]*100) + self.filterQ/(color[2]*10)) * 255)
+        // 
+        // var newColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
+        // TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
         
         if(self.filterEnvs) {
           Object.keys(self.filterEnvs).forEach(v => {

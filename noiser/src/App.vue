@@ -1,24 +1,28 @@
 <template lang="pug">
   #app
-    .main-panel.col-center
-      .row
-        #main-name.title {{this.mainName}}
-        .col-sm-2#midi-select
-          select(id="midiSelect" @change="midiSourceChange")
-            option(value="" disabled selected) no midi devices...
-      .col-center
+    .row.main-panel
+      .col-sm-4
         .row
-          .col-sm-2.margin
+          .col-sm-7
+            .col-sm-11
+              #main-name.title {{this.mainName}}
+          .col-sm-4#midi-select
+            select(id="midiSelect" @change="midiSourceChange")
+              option(value="" disabled selected) no midi devices...
+        .row
+          .col-sm-5
             oscillator(ref="oscillator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
             arpeggiator(ref="arpeggiator" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
             
-          .pads.col-sm-3.margin
+          .col-sm-7
             envelope(ref="envelope" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
-        //.row.margin
-          audioBuffer(ref="audioBuffer" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
-        
-      .row
+      .col-sm-2
         blobStuff(ref="bloblStuff" v-if="this.contentLoaded")
+          //.row.margin
+            audioBuffer(ref="audioBuffer" v-if="this.contentLoaded" :audioCtx="this.audioCtx")
+        
+    
+          
   
 
 
@@ -196,7 +200,7 @@ export default {
 }
 
 .main-panel {
-  left: 29%;
+  left: 23%;
   /* right: auto; */
   /* width: 1000px; */
   position: relative;
@@ -220,6 +224,8 @@ export default {
   font-style: italic;
   font-size: 14px;
 }
+
+
 
 
 
