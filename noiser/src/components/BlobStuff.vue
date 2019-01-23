@@ -58,23 +58,36 @@ export default {
       self.camera.position.z = 5;
 
 
-      self.sphereGeometry = new self.Three.SphereGeometry(1, 50, 50);
-      self.material = new self.Three.MeshNormalMaterial();
+      self.sphereGeometry = new self.Three.SphereGeometry(1, 30, 30);
+      self.material = new self.Three.MeshLambertMaterial();
+      var light = new self.Three.SpotLight( 0x808080 ); // soft white light
+      light.position.set(-40, 30, 10);
+      self.scene.add( light );
 
       self.sphere = new self.Three.Mesh(self.sphereGeometry, self.material);
+      self.old = new self.Three.Mesh(self.sphereGeometry, self.material);
       self.scene.add(self.sphere);
 
-      self.old = self.sphere.geometry
+      self.old = []
+      
+      for (var i = 0; i < self.sphere.geometry.vertices.length; i++) {
+          self.old.push(self.sphere.geometry.vertices[i]);
+      }
 
     },
     update() {
       
+      
       // var self.Three = this.Three
       
       var self = this
+      Object.keys(self.pressedNotes).forEach(v => {
+        this.morph += self.pressedNotes[v]
+      })
 
       // change '0.003' for more aggressive animation
-      var time = performance.now() * 0.003;
+      // var time = performance.now() * 0.001;
+      var time = self.morph * .00005;
       //console.log(time)
 
       //go through vertices here and reposition them
@@ -82,17 +95,23 @@ export default {
       // change 'k' value for more spikes
       var k = 1;
       if(Object.keys(self.pressedNotes).length) {
+      // if(true) {
         for (var i = 0; i < self.sphere.geometry.vertices.length; i++) {
             var p = self.sphere.geometry.vertices[i];
-            p.normalize().multiplyScalar(1 + 0.3 * this.noise.noise.perlin3(p.x * Math.sin(self.morph)*3 + 0, p.y * k, p.z * k));
+            p.normalize().multiplyScalar(1 + .3 * this.noise.noise.perlin3(p.x * k + time, p.y * k, p.z * k));
         }
       } else {
-        self.sphere.geometry = self.old
+        for (var i = 0; i < self.sphere.geometry.vertices.length; i++) {
+          self.sphere.geometry.vertices[i].x = (self.old[i].x + self.sphere.geometry.vertices[i].x) / 2
+          self.sphere.geometry.vertices[i].y = (self.old[i].y + self.sphere.geometry.vertices[i].y) / 2
+          self.sphere.geometry.vertices[i].z = (self.old[i].z + self.sphere.geometry.vertices[i].z) / 2
+          self.sphere.geometry.vertices[i]
+        }
       }
       self.sphere.geometry.computeVertexNormals();
       self.sphere.geometry.normalsNeedUpdate = true;
       self.sphere.geometry.verticesNeedUpdate = true;
-    }
+    },
   },
   mounted() {
     this.Three = require('three')
@@ -102,13 +121,13 @@ export default {
     
     
     EventBus.$on('freq-on', freq => {
-      self.pressedNotes[freq] = true
+      self.pressedNotes[freq] = freq
       // requestAnimationFrame(animate);
-      this.morph += freq
+      // this.morph += freq
     });
     EventBus.$on('freq-off', freq => {
       delete self.pressedNotes[freq]
-      this.morph -= freq
+      // this.morph -= freq
     });
     
     self.init();
@@ -125,6 +144,13 @@ export default {
       /* render scene and camera */
       self.renderer.render(self.scene,self.camera);
       requestAnimationFrame(animate);
+      
+      // if(!Object.keys(self.pressedNotes).length) {
+      //   self.sphere.geometry.vertices = self.old
+      //   self.sphere.geometry.computeVertexNormals();
+      //   self.sphere.geometry.normalsNeedUpdate = true;
+      //   self.sphere.geometry.verticesNeedUpdate = true;
+      // }
     
     }
     

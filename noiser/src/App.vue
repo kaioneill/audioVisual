@@ -207,7 +207,7 @@ export default {
 }
 
 .margin {
-  margin: 10px;
+  margin-right: 0px;
 }
 
 .col-center {
