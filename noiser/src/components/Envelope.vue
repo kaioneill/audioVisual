@@ -214,6 +214,9 @@ export default {
             // self.filterEnvs[v].frequency.cancelAndHoldAtTime(self.audioCtx.currentTime)
             self.filterEnvs[v].frequency.linearRampToValueAtTime(self.filterFreq, self.audioCtx.currentTime + .05)
             self.filterEnvs[v].Q.linearRampToValueAtTime(self.filterQ, self.audioCtx.currentTime + .05)
+            
+            EventBus.$emit('filter-change', self.filterFreq)
+            
           })
         }
       }

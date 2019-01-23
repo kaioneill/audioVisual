@@ -29,6 +29,7 @@ export default {
       material: null,
       
       morph: 0,
+      filterFreq: 15000,
       
     }
   },
@@ -93,12 +94,12 @@ export default {
       //go through vertices here and reposition them
       
       // change 'k' value for more spikes
-      var k = 1;
+      var k = self.filterFreq/8000
       if(Object.keys(self.pressedNotes).length) {
       // if(true) {
         for (var i = 0; i < self.sphere.geometry.vertices.length; i++) {
             var p = self.sphere.geometry.vertices[i];
-            p.normalize().multiplyScalar(1 + .3 * this.noise.noise.perlin3(p.x * k + time, p.y * k, p.z * k));
+            p.normalize().multiplyScalar(1 + self.filterFreq/30000 * this.noise.noise.perlin3(p.x * k + time, p.y * k, p.z * k));
         }
       } else {
         for (var i = 0; i < self.sphere.geometry.vertices.length; i++) {
@@ -128,6 +129,11 @@ export default {
     EventBus.$on('freq-off', freq => {
       delete self.pressedNotes[freq]
       // this.morph -= freq
+    });
+    
+    
+    EventBus.$on('filter-change', filterFreq => {
+      self.filterFreq = filterFreq
     });
     
     self.init();
