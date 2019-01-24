@@ -4,14 +4,14 @@
       .pad-container
         h4 amp control
         #amp-pad.pad
-          h4.gray.no-select attack
-          h4.vertical-text.gray.no-select release
+          //h4.gray.no-select attack
+          //h4.vertical-text.gray.no-select release
           #amp-drag.drag
       .pad-container
         h4 filter control
         #filter-pad.pad
-          h4.gray.no-select freq
-          h4.vertical-text.gray.no-select Q
+          //h4.gray.no-select freq
+          //h4.vertical-text.gray.no-select Q
           #filter-drag.drag
 
   
@@ -165,13 +165,14 @@ export default {
     var filterPadRect = filterPad.getBoundingClientRect()
     
     
-    filterDrag.style.left = '80px'
+    filterDrag.style.left = 0
     filterDrag.style.top = 0
     
-    self.filterPadX = parseInt(80) + 10
+    self.filterPadX = parseInt(filterDrag.style.left) + 10
     self.filterPadY = parseInt(filterDrag.style.top) + 10
     
-    
+  
+    EventBus.$emit('filter-change', self.filterFreq)
     
     
     // filterPad.onmousedown = function (e) {

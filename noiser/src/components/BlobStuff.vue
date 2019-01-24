@@ -29,7 +29,7 @@ export default {
       material: null,
       
       morph: 0,
-      filterFreq: 15000,
+      filterFreq: 0,
       
     }
   },
