@@ -1,3 +1,5 @@
 # audioVisual
 
-(Hopefully) an interactive visual interface of some kind. Will use GSAP for visuals, and Web Audio API for audio stuff.
+Vue.js & Web Audio API Synthesizer with basic MIDI support for external controllers
+
+www.noise.garden
