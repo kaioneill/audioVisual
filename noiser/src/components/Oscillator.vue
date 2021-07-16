@@ -314,20 +314,21 @@ export default {
     
     
     EventBus.$on('arp-start', note => {
+      EventBus.$emit('freq-on', self.noteFreqs[note])
       this.startOsc(note);
       // var newColor = 'rgb(' + parseInt(Math.cos(self.color) * 255) + ',' + parseInt(Math.sin(self.color) * 255) + ',' + parseInt(Math.tan(self.color) * 255) + ')'
       
-      var newColor = 'rgb(' + self.color[0] + ',' + self.color[1] + ',' + self.color[2] + ')'
-      // document.querySelector('#background').style.backgroundColor = newColor
-      TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
+      // var newColor = 'rgb(' + self.color[0] + ',' + self.color[1] + ',' + self.color[2] + ')'
+      // TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
     });
     EventBus.$on('arp-stop', note => {
+      EventBus.$emit('freq-off', self.noteFreqs[note])
       if(this.oscs[note] != null) {
         this.stopOsc(note);
         
-        var newColor = 'rgb(' + self.color[0] + ',' + self.color[1] + ',' + self.color[2] + ')'
-        
-        TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
+        // var newColor = 'rgb(' + self.color[0] + ',' + self.color[1] + ',' + self.color[2] + ')'
+        // 
+        // TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
       }
     });
     

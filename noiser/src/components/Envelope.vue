@@ -4,14 +4,14 @@
       .pad-container
         h4 amp control
         #amp-pad.pad
-          h4.gray.no-select attack
-          h4.vertical-text.gray.no-select release
+          //h4.gray.no-select attack
+          //h4.vertical-text.gray.no-select release
           #amp-drag.drag
       .pad-container
         h4 filter control
         #filter-pad.pad
-          h4.gray.no-select freq
-          h4.vertical-text.gray.no-select Q
+          //h4.gray.no-select freq
+          //h4.vertical-text.gray.no-select Q
           #filter-drag.drag
 
   
@@ -165,13 +165,14 @@ export default {
     var filterPadRect = filterPad.getBoundingClientRect()
     
     
-    filterDrag.style.left = '80px'
+    filterDrag.style.left = 0
     filterDrag.style.top = 0
     
-    self.filterPadX = parseInt(80) + 10
+    self.filterPadX = parseInt(filterDrag.style.left) + 10
     self.filterPadY = parseInt(filterDrag.style.top) + 10
     
-    
+  
+    EventBus.$emit('filter-change', self.filterFreq)
     
     
     // filterPad.onmousedown = function (e) {
@@ -193,29 +194,30 @@ export default {
         }
         document.onmouseup = function () {
           filterPad.onmousemove = null
-          TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: 'rgb(rgb(204, 255, 255)'});
+          // TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: 'rgb(rgb(204, 255, 255)'});
         }
         self.filterPadX = parseInt(filterDrag.style.left) + 10
         self.filterPadY = parseInt(filterDrag.style.top) + 10
         
-        var oldColor = window.getComputedStyle(document.querySelector('#background')).getPropertyValue('background-color')
-
-        var color = oldColor.substring(oldColor.indexOf('(')+1, oldColor.length-1).split(',').map(Number)
-        // console.log(color)
-          
-        color[0] = parseInt(Math.cos(self.filterFreq/(color[0]*100) + self.filterQ/(color[0]*10)) * 255)
-        color[1] = parseInt(Math.sin(self.filterFreq/(color[1]*100) + self.filterQ/(color[1]*10)) * 255)
-        color[2] = parseInt(Math.tan(self.filterFreq/(color[2]*100) + self.filterQ/(color[2]*10)) * 255)
-        
-        var newColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
-        // document.querySelector('#background').style.backgroundColor = newColor
-        TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
+        // var oldColor = window.getComputedStyle(document.querySelector('#background')).getPropertyValue('background-color')
+        // 
+        // var color = oldColor.substring(oldColor.indexOf('(')+1, oldColor.length-1).split(',').map(Number)
+        // 
+        // color[0] = parseInt(Math.cos(self.filterFreq/(color[0]*100) + self.filterQ/(color[0]*10)) * 255)
+        // color[1] = parseInt(Math.sin(self.filterFreq/(color[1]*100) + self.filterQ/(color[1]*10)) * 255)
+        // color[2] = parseInt(Math.tan(self.filterFreq/(color[2]*100) + self.filterQ/(color[2]*10)) * 255)
+        // 
+        // var newColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')'
+        // TweenLite.to(document.querySelector('#background'), .5, {backgroundColor: newColor});
         
         if(self.filterEnvs) {
           Object.keys(self.filterEnvs).forEach(v => {
             // self.filterEnvs[v].frequency.cancelAndHoldAtTime(self.audioCtx.currentTime)
             self.filterEnvs[v].frequency.linearRampToValueAtTime(self.filterFreq, self.audioCtx.currentTime + .05)
             self.filterEnvs[v].Q.linearRampToValueAtTime(self.filterQ, self.audioCtx.currentTime + .05)
+            
+            EventBus.$emit('filter-change', self.filterFreq)
+            
           })
         }
       }
